@@ -1,48 +1,32 @@
-# 🧠 Knowledge Assistant - RAG-Powered Support Ticket Resolution
+# 🧠 AI Support Agent - Knowledge Assistant
 
-A production-ready **Retrieval-Augmented Generation (RAG)** system that helps support teams respond to customer tickets efficiently using relevant documentation.
-
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://your-app.streamlit.app)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-green.svg)](https://openai.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-00a393.svg)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.31+-FF4B4B.svg)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 📋 Table of Contents
+> **Production-ready RAG (Retrieval-Augmented Generation) system that helps support teams resolve customer tickets efficiently using AI and relevant documentation.**
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Quick Start](#quick-start)
-- [🚀 Deploy to Streamlit Cloud](#deploy-to-streamlit-cloud)
-- [Configuration](#configuration)
-- [API Reference](#api-reference)
-- [Development](#development)
-- [Testing](#testing)
-- [Project Structure](#project-structure)
-- [Design Decisions](#design-decisions)
+Built with FastAPI, OpenAI GPT-4o, FAISS vector database, and Streamlit - featuring advanced hybrid search, conversation memory, and Model Context Protocol (MCP) structured prompting.
 
 ---
 
-## Overview
+## 🎯 What This Does
 
-The Knowledge Assistant analyzes customer support queries and returns structured, helpful responses by:
+Transform customer support tickets into accurate, policy-compliant responses using AI:
 
-1. **Retrieving** relevant documentation from a vector database
-2. **Augmenting** prompts with retrieved context
-3. **Generating** accurate, policy-compliant responses using LLMs
-
-### Sample Input
-
+**Input:**
 ```json
 {
   "ticket_text": "My domain was suspended and I didn't get any notice. How can I reactivate it?"
 }
 ```
 
-### Sample Output (MCP-compliant)
-
+**Output (MCP-Compliant):**
 ```json
 {
-  "answer": "Your domain may have been suspended due to a WHOIS verification failure or policy violation. To reactivate, please log into your account, navigate to 'My Domains', and check the suspension reason. For WHOIS issues, update your contact information and verify your email. The domain should be reactivated within 24-48 hours after verification.",
+  "answer": "Your domain may have been suspended due to WHOIS verification failure or policy violation. To reactivate: 1) Log into your domain management portal, 2) Navigate to 'My Domains' and check suspension details, 3) Update your WHOIS information and verify your email. Reactivation typically takes 24-48 hours after verification.",
   "references": [
     "Policy: Domain Suspension Guidelines, Section 4.2 - Reactivation Process",
     "Policy: Domain Suspension Guidelines, Section 4.3 - Communication"
@@ -53,257 +37,152 @@ The Knowledge Assistant analyzes customer support queries and returns structured
 
 ---
 
-## Features
+## ✨ Key Features
 
 | Feature | Description |
 |---------|-------------|
-| **🌐 Streamlit Web UI** | Beautiful, interactive chat interface - deploy to Streamlit Cloud |
-| **RAG Pipeline** | FAISS-based vector search with Sentence Transformers embeddings |
-| **Hybrid Search** | Combined semantic + BM25 keyword search with cross-encoder reranking |
-| **Semantic Chunking** | Topic-aware document splitting using embeddings (not character-based) |
-| **Conversation Memory** | Short-term buffer + long-term vector memory for learning |
-| **OpenAI Integration** | Works with GPT-4, GPT-4o-mini, GPT-3.5-turbo |
-| **MCP-Compliant** | Structured prompts with role, context, task, and output schema |
-| **Dynamic Document Upload** | Upload new documents via UI without restarting |
-| **FastAPI Backend** | Modern async API with automatic OpenAPI documentation |
-| **Docker Ready** | Multi-stage Dockerfile and Docker Compose for easy deployment |
-| **Comprehensive Tests** | 114 tests with 76% coverage |
+| 🔍 **Hybrid Search** | Combines semantic (FAISS) + keyword (BM25) search with cross-encoder reranking |
+| 🧠 **Conversation Memory** | Short-term + long-term memory for consistent, context-aware responses |
+| 📚 **Dynamic Knowledge Base** | Upload documents via UI or API without code changes |
+| 🎨 **Beautiful Web UI** | Professional Streamlit interface with analytics and debugging tools |
+| 🤖 **MCP-Compliant** | Structured prompt engineering with role, context, task, and output schema |
+| 📊 **RAG Inspector** | Debug and visualize the retrieval pipeline in real-time |
+| 🧪 **Semantic Chunking** | Topic-aware document splitting using embeddings (not character-based) |
+| 🚀 **Production Ready** | 114+ unit tests, Docker support, comprehensive error handling |
+| ⚡ **FastAPI Backend** | Async API with automatic OpenAPI docs at `/docs` |
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         FastAPI Application                              │
-│           POST /resolve-ticket  │  POST /api/documents/upload           │
-└───────────────────────┬─────────────────────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                          RAG Pipeline (Enhanced)                         │
-│                                                                          │
-│  ┌─────────────────┐     ┌──────────────────────────────────────────┐   │
-│  │ Conversation    │     │           Hybrid Search                   │   │
-│  │ Memory          │     │  ┌─────────────┐   ┌─────────────────┐   │   │
-│  │                 │     │  │  Semantic   │   │    BM25         │   │   │
-│  │ • Short-term    │     │  │  (FAISS/    │ + │   Keyword       │   │   │
-│  │   buffer        │     │  │   FAISS)    │   │   Search        │   │   │
-│  │ • Long-term     │     │  └──────┬──────┘   └───────┬─────────┘   │   │
-│  │   vector store  │     │         │                  │             │   │
-│  └────────┬────────┘     │         └───────┬──────────┘             │   │
-│           │              │                 ▼                         │   │
-│           │              │    ┌───────────────────────┐             │   │
-│           │              │    │  Cross-Encoder        │             │   │
-│           │              │    │  Reranking            │             │   │
-│           │              │    └───────────┬───────────┘             │   │
-│           │              └────────────────┼─────────────────────────┘   │
-│           │                               │                              │
-│           └───────────────────────────────┼──────────────────────────┐  │
-│                                           ▼                          │  │
-│  ┌────────────────────────────────────────────────────────────────┐  │  │
-│  │                    MCP Prompt Builder                          │  │  │
-│  │  Memory Context + Retrieved Docs + Task + Output Schema        │  │  │
-│  └───────────────────────────────┬────────────────────────────────┘  │  │
-└──────────────────────────────────┼───────────────────────────────────┘  │
-                                   ▼                                       │
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           LLM Service (OpenAI)                          │
-│                    ┌─────────────────────────────┐                      │
-│                    │  GPT-4o-mini / GPT-4 / 3.5  │                      │
-│                    └─────────────────────────────┘                      │
-└─────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    Customer Support Ticket                      │
+└──────────────────────────┬──────────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       RAG Pipeline                              │
+│  ┌────────────┐  ┌─────────────┐  ┌──────────────┐            │
+│  │  Query     │→ │   Hybrid    │→ │   Context    │            │
+│  │ Embedding  │  │   Search    │  │  Augmented   │            │
+│  │            │  │ (Semantic+  │  │    Prompt    │            │
+│  │            │  │   BM25)     │  │    (MCP)     │            │
+│  └────────────┘  └─────────────┘  └──────────────┘            │
+└──────────────────────────┬──────────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   OpenAI GPT-4o / GPT-4o-mini                   │
+└──────────────────────────┬──────────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│        Structured JSON Response (Answer + References)           │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### Advanced Features
-
-#### 🔍 Hybrid Search
-Combines **semantic search** (vector similarity) with **BM25 keyword search** for superior results:
-- Semantic search finds conceptually similar documents
-- BM25 finds exact term matches
-- Cross-encoder reranking improves final ordering
-
-#### 🧠 Semantic Chunking
-Unlike simple character-based chunking, our system:
-- Uses embeddings to detect topic boundaries
-- Splits at semantic breakpoints (topic changes)
-- Preserves context and meaning within chunks
-- Automatically adjusts chunk sizes to content structure
-
-#### 💾 Conversation Memory
-The system learns from interactions:
-- **Short-term**: Maintains session context (recent exchanges)
-- **Long-term**: Stores conversations in vector database
-- **Similar query detection**: Provides consistent responses
-- **Feedback integration**: Improves with user ratings
-
-#### 🗄️ Vector Database
-- **FAISS**: Fast, efficient, in-memory vector search with persistence support
-
-### Component Details
-
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Embedding Service** | Sentence Transformers (all-MiniLM-L6-v2) | Text → Vector conversion |
-| **Vector Store** | FAISS (IndexFlatIP) | Fast similarity search |
-| **LLM Service** | OpenAI / Ollama | Response generation |
-| **API Layer** | FastAPI | HTTP endpoint handling |
+**Core Technologies:**
+- **LLM:** OpenAI GPT-4o / GPT-4o-mini
+- **Vector DB:** FAISS (Facebook AI Similarity Search)
+- **Embeddings:** Sentence Transformers (all-MiniLM-L6-v2)
+- **API:** FastAPI (async Python web framework)
+- **UI:** Streamlit (interactive data apps)
+- **Search:** Hybrid (semantic + BM25 keyword + cross-encoder reranking)
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-### Option 1: Streamlit Web UI (Easiest)
+### Option 1: Docker (Recommended)
 
 ```bash
 # 1. Clone the repository
-git clone <your-fork-url>
-cd interview-exercise-ai
+git clone https://github.com/KaxitPandya/ai-support-agent.git
+cd ai-support-agent
 
-# 2. Create and activate virtual environment
+# 2. Create .env file and add your OpenAI API key
+cp env.example .env
+# Edit .env and set: OPENAI_API_KEY=sk-your-key-here
+
+# 3. Start with Docker Compose
+docker-compose up --build
+
+# 4. Access the application
+# - API: http://localhost:8000
+# - API Docs: http://localhost:8000/docs
+```
+
+### Option 2: Local Python Environment
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/KaxitPandya/ai-support-agent.git
+cd ai-support-agent
+
+# 2. Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Copy environment file and add your API key
+# 4. Setup environment
 cp env.example .env
-# Edit .env and set OPENAI_API_KEY=sk-your-key-here
+# Edit .env and add your OpenAI API key
 
-# 5. Run Streamlit app
+# 5. Run Streamlit UI (easiest way to start)
 streamlit run streamlit_app.py
+# Opens at http://localhost:8501
 
-# Open http://localhost:8501 in your browser
-```
-
-### Option 2: Docker
-
-```bash
-# 1. Clone the repository
-git clone <your-fork-url>
-cd interview-exercise-ai
-
-# 2. Copy environment file and add your API key
-cp env.example .env
-# Edit .env and set OPENAI_API_KEY=sk-your-key-here
-
-# 3. Start the application
-docker-compose up --build
-
-# 4. Test the API
-curl -X POST http://localhost:8000/resolve-ticket \
-  -H "Content-Type: application/json" \
-  -d '{"ticket_text": "My domain was suspended. How can I reactivate it?"}'
+# OR run FastAPI backend
+uvicorn src.main:app --reload --port 8000
+# API at http://localhost:8000
 ```
 
 ---
 
-## 🚀 Deploy to Streamlit Cloud
+## 🌐 Deployment Options
 
-The easiest way to deploy this application is via **Streamlit Cloud** - it's free and connects directly to GitHub!
+### Deploy to Streamlit Cloud (Free, 1-Click)
 
-### Step 1: Fork & Push to GitHub
+1. **Fork this repository** to your GitHub account
 
-```bash
-# Fork this repository and clone your fork
-git clone https://github.com/YOUR_USERNAME/interview-exercise-ai.git
-cd interview-exercise-ai
-git push origin main
-```
+2. **Go to [share.streamlit.io](https://share.streamlit.io)** and click "New app"
 
-### Step 2: Deploy on Streamlit Cloud
+3. **Select your repository:**
+   - Repository: `YOUR-USERNAME/ai-support-agent`
+   - Branch: `main`
+   - Main file: `streamlit_app.py`
 
-1. Go to [share.streamlit.io](https://share.streamlit.io)
-2. Click **"New app"**
-3. Connect your GitHub account
-4. Select your repository and branch
-5. Set the main file path: `streamlit_app.py`
-6. Click **"Deploy!"**
+4. **Add secrets** in Streamlit Cloud dashboard (Settings → Secrets):
+   ```toml
+   OPENAI_API_KEY = "sk-your-actual-key-here"
+   OPENAI_MODEL = "gpt-4o-mini"
+   OPENAI_TEMPERATURE = "0.3"
+   OPENAI_MAX_TOKENS = "1024"
+   TOP_K_RESULTS = "5"
+   SIMILARITY_THRESHOLD = "0.3"
+   ```
 
-### Step 3: Configure Secrets
+5. **Click Deploy** - Your app will be live at `https://your-app.streamlit.app` 🎉
 
-In your Streamlit Cloud app dashboard:
+### Deploy with Docker
 
-1. Click **"Manage app"** → **"Settings"** → **"Secrets"**
-2. Add your secrets in TOML format:
-
-```toml
-OPENAI_API_KEY = "sk-your-api-key-here"
-OPENAI_MODEL = "gpt-4o-mini"
-OPENAI_TEMPERATURE = "0.3"
-OPENAI_MAX_TOKENS = "1024"
-TOP_K_RESULTS = "5"
-SIMILARITY_THRESHOLD = "0.3"
-```
-
-3. Click **"Save"** - your app will automatically restart!
-
-### That's it! 🎉
-
-Your Knowledge Assistant is now live at `https://your-app.streamlit.app`
+See the [Docker Deployment](#-docker-deployment) section below.
 
 ---
 
-## Configuration
+## 📖 API Reference
 
-All configuration is done via environment variables. See `env.example` for all options.
+### Resolve a Support Ticket
 
-### Required Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OPENAI_API_KEY` | Your OpenAI API key | - |
-| `LLM_PROVIDER` | LLM to use: `openai` or `ollama` | `openai` |
-
-### Optional Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OPENAI_MODEL` | OpenAI model name | `gpt-4o-mini` |
-| `OPENAI_TEMPERATURE` | Response creativity (0-1) | `0.3` |
-| `OLLAMA_BASE_URL` | Ollama server URL | `http://localhost:11434` |
-| `OLLAMA_MODEL` | Ollama model name | `llama2` |
-| `EMBEDDING_MODEL` | Sentence Transformer model | `all-MiniLM-L6-v2` |
-| `TOP_K_RESULTS` | Documents to retrieve | `3` |
-| `SIMILARITY_THRESHOLD` | Min similarity score | `0.3` |
-
----
-
-## API Reference
-
-### Base URL
-
-```
-http://localhost:8000
-```
-
-### Endpoints
-
-#### `GET /`
-Returns API information.
-
-#### `GET /health`
-Health check endpoint.
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "version": "1.0.0",
-  "llm_provider": "openai",
-  "embedding_model": "all-MiniLM-L6-v2"
-}
-```
-
-#### `POST /resolve-ticket`
-Resolve a customer support ticket.
+**Endpoint:** `POST /resolve-ticket`
 
 **Request:**
-```json
-{
-  "ticket_text": "My domain was suspended and I didn't get any notice. How can I reactivate it?"
-}
+```bash
+curl -X POST http://localhost:8000/resolve-ticket \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ticket_text": "My domain was suspended. How can I reactivate it?"
+  }'
 ```
 
 **Response:**
@@ -315,241 +194,298 @@ Resolve a customer support ticket.
 }
 ```
 
-**Action Values:**
-- `none` - Issue resolved
-- `escalate_to_abuse_team` - Security/abuse issue
-- `escalate_to_billing` - Payment/refund issue
-- `escalate_to_technical` - Technical issue requiring engineering
-- `customer_action_required` - Customer needs to take action
-- `follow_up_required` - Agent should follow up
+### Upload a Document
 
-### Document Management Endpoints
-
-#### `POST /api/documents/upload`
-Upload a new document to the knowledge base.
+**Endpoint:** `POST /api/documents/upload`
 
 ```bash
-curl -X POST "http://localhost:8000/api/documents/upload" \
-  -F "file=@new_policy.md" \
+curl -X POST http://localhost:8000/api/documents/upload \
+  -F "file=@policy.md" \
   -F "category=Domain Policies" \
   -F "index_immediately=true"
 ```
 
-#### `GET /api/documents/files`
-List all uploaded documents.
+### Additional Endpoints
 
-#### `DELETE /api/documents/files/{filename}`
-Delete an uploaded document.
+- **Health Check:** `GET /health`
+- **List Uploaded Files:** `GET /api/documents/files`
+- **Delete File:** `DELETE /api/documents/files/{filename}`
+- **Reindex All:** `POST /api/documents/reindex`
+- **Get Stats:** `GET /api/documents/stats`
 
-#### `POST /api/documents/reindex`
-Rebuild the vector index from all documents.
-
-#### `GET /api/documents/stats`
-Get vector database statistics.
-
-### Interactive Documentation
-
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+**Interactive Documentation:** http://localhost:8000/docs
 
 ---
 
-## Development
+## 🎨 Web UI Features
 
-### Prerequisites
+The Streamlit interface provides:
 
-- Python 3.10+
-- pip or poetry
-- Docker (optional)
+### 1. 🎫 Ticket Resolution
+- Resolve customer tickets with AI-powered responses
+- Quick examples for common scenarios
+- Real-time RAG pipeline visualization
+- View retrieved documents and similarity scores
 
-### Setup
+### 2. 📚 Knowledge Base Management
+- Upload new documents (.txt, .md)
+- Browse indexed documents by category
+- Delete and reindex documents
+- Track upload history
+
+### 3. 🔬 RAG Inspector
+- Test the retrieval pipeline with custom queries
+- View MCP prompt structure
+- Debug similarity scores and document ranking
+- Understand how the AI generates responses
+
+### 4. 📊 Analytics Dashboard
+- Total documents indexed
+- Tickets resolved count
+- System configuration overview
+- Performance metrics
+
+### 5. ⚙️ Settings
+- Adjust RAG parameters (top-k, threshold)
+- Configure LLM settings (model, temperature, max tokens)
+- Reset pipeline and clear session
+
+---
+
+## 🐳 Docker Deployment
+
+### Build and Run
 
 ```bash
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate
+# Build the Docker image
+docker build -t ai-support-agent .
 
-# Install dependencies with dev extras
-pip install -r requirements.txt
-pip install pytest pytest-asyncio pytest-cov
+# Run the container
+docker run -d \
+  -p 8000:8000 \
+  -e OPENAI_API_KEY=sk-your-key-here \
+  -e OPENAI_MODEL=gpt-4o-mini \
+  -v $(pwd)/data:/app/data \
+  --name support-agent \
+  ai-support-agent
 
-# Run in development mode
-uvicorn src.main:app --reload
+# Check logs
+docker logs -f support-agent
+
+# Stop the container
+docker stop support-agent
 ```
 
-### Code Style
+### Docker Compose (Multi-Service)
 
-The project follows PEP 8 and uses type hints throughout. Key conventions:
+```bash
+# Start all services
+docker-compose up -d
 
-- **Modules**: Lowercase with underscores (`vector_store.py`)
-- **Classes**: PascalCase (`VectorStore`)
-- **Functions**: Lowercase with underscores (`embed_text`)
-- **Constants**: Uppercase (`SYSTEM_PROMPT`)
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Rebuild after changes
+docker-compose up --build
+```
 
 ---
 
-## Testing
+## 🧪 Testing
 
 ### Run All Tests
 
 ```bash
-# Run tests with coverage
+# Run all 114 tests
+pytest
+
+# Run with coverage report
 pytest --cov=src --cov-report=term-missing
 
 # Run specific test file
 pytest tests/test_rag.py -v
 
-# Run specific test
-pytest tests/test_api.py::TestAPI::test_resolve_ticket_success -v
+# Run with verbose output
+pytest -vv
 ```
 
 ### Test Coverage
 
-The test suite covers:
-
-- ✅ Embedding service (text embedding, similarity)
-- ✅ Vector store (CRUD, similarity search)
-- ✅ RAG pipeline (context retrieval, response generation)
-- ✅ API endpoints (validation, error handling)
-- ✅ MCP prompt templates (structure, content)
+- ✅ **RAG Pipeline:** Context retrieval, response generation, error handling
+- ✅ **Vector Store:** FAISS operations, similarity search, persistence
+- ✅ **Embeddings:** Text embedding, similarity calculation
+- ✅ **Hybrid Search:** Semantic + keyword search, reranking
+- ✅ **Memory System:** Short-term buffer, long-term storage
+- ✅ **API Endpoints:** Request validation, error responses
+- ✅ **MCP Prompts:** Prompt structure, context injection
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
+ai-support-agent/
 ├── src/
-│   ├── __init__.py
-│   ├── main.py              # FastAPI application
-│   ├── config.py            # Configuration settings
-│   ├── models/
-│   │   └── schemas.py       # Pydantic models (request/response)
-│   ├── services/
-│   │   ├── embedding.py     # Sentence Transformers embedding
-│   │   ├── vector_store.py  # FAISS vector operations
-│   │   ├── llm.py           # LLM client (OpenAI/Ollama)
-│   │   └── rag.py           # RAG pipeline orchestrator
+│   ├── api/
+│   │   └── upload.py              # Document upload endpoints
 │   ├── data/
-│   │   └── knowledge_base.py # Synthetic documentation
-│   └── prompts/
-│       └── mcp_prompt.py    # MCP-compliant prompt templates
-├── tests/
-│   ├── conftest.py          # Pytest fixtures
-│   ├── test_embedding.py
-│   ├── test_vector_store.py
-│   ├── test_rag.py
-│   ├── test_api.py
-│   └── test_prompts.py
-├── Dockerfile               # Multi-stage Docker build
-├── docker-compose.yml       # Production compose
-├── docker-compose.dev.yml   # Development compose
-├── requirements.txt         # Python dependencies
-├── pyproject.toml          # Project metadata
-└── README.md               # This file
+│   │   └── knowledge_base.py      # Sample support docs
+│   ├── models/
+│   │   └── schemas.py             # Pydantic models
+│   ├── prompts/
+│   │   └── mcp_prompt.py          # MCP prompt templates
+│   ├── services/
+│   │   ├── rag.py                 # RAG pipeline orchestrator
+│   │   ├── vector_store.py        # FAISS vector database
+│   │   ├── embedding.py           # Sentence Transformers
+│   │   ├── llm.py                 # OpenAI integration
+│   │   ├── hybrid_search.py       # Hybrid search engine
+│   │   ├── memory.py              # Conversation memory
+│   │   ├── semantic_chunker.py    # Topic-aware chunking
+│   │   └── document_processor.py  # Document processing
+│   ├── config.py                  # Configuration management
+│   └── main.py                    # FastAPI application
+├── tests/                         # 114+ unit tests
+├── streamlit_app.py               # Streamlit web UI
+├── Dockerfile                     # Docker configuration
+├── docker-compose.yml             # Docker Compose setup
+├── requirements.txt               # Python dependencies
+├── env.example                    # Environment template
+└── README.md                      # This file
 ```
 
 ---
 
-## Design Decisions
+## ⚙️ Configuration
 
-### 1. RAG Architecture & Vector Database
+All settings are managed via environment variables. See [env.example](env.example) for all options.
 
-**Choice**: FAISS as the Vector Database + Sentence Transformers for Embeddings
+### Required Settings
 
-**Architecture Flow**:
-```
-Source Documents (knowledge_base.py)
-         │
-         ▼
-    Embedding Service (Sentence Transformers)
-         │
-         ▼
-    FAISS Vector Database ◄─── This IS the vector DB
-         │
-         ▼
-    Similarity Search Results
-```
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `OPENAI_API_KEY` | Your OpenAI API key | `sk-...` |
 
-**Why FAISS is a Vector Database**:
-- FAISS (Facebook AI Similarity Search) stores document embeddings as vectors
-- Performs efficient similarity search (cosine similarity via Inner Product)
-- Supports persistence (save/load index to disk)
-- Used by companies like Facebook, Spotify, and Airbnb at massive scale
+### Optional Settings
 
-**Knowledge Base vs Vector Store**:
-- `knowledge_base.py` = **Source data** (like documents in a CMS)
-- `vector_store.py` = **FAISS vector database** that indexes and searches embeddings
-
-**Alternatives Considered**: Qdrant, Weaviate, Chroma
-**Why FAISS**: No external dependencies, battle-tested, excellent for this scale, easy deployment
-
-### 2. LLM Integration
-
-**Choice**: Dual support (OpenAI + Ollama)
-
-**Rationale**:
-- **OpenAI**: Production-ready, best quality, easy to use.
-- **Ollama**: Local inference for privacy/cost-sensitive scenarios.
-- **Abstraction Layer**: `LLMService` class abstracts provider details.
-
-### 3. MCP (Model Context Protocol) Prompt Design
-
-**What MCP Means Here**:
-
-In this project, MCP refers to a **structured prompt engineering pattern**, NOT Anthropic's tool integration protocol. The interview defines MCP as:
-> "Prompt should have clearly defined role, context, task, and output schema"
-
-**MCP Prompt Structure**:
-```
-┌─────────────────────────────────────────────────────┐
-│ SYSTEM MESSAGE (ROLE)                               │
-│ - AI identity: "Expert support assistant"           │
-│ - Expertise areas                                   │
-│ - Response guidelines                               │
-└─────────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────────┐
-│ USER MESSAGE                                        │
-│ ├── CONTEXT: Retrieved docs from FAISS             │
-│ ├── TASK: Customer ticket + instructions           │
-│ └── OUTPUT SCHEMA: JSON format specification       │
-└─────────────────────────────────────────────────────┘
-```
-
-**Benefits of MCP Pattern**:
-- **Consistency**: Same structure for every request
-- **Grounding**: LLM uses retrieved context, not hallucinations
-- **Parseable Output**: Strict JSON schema for downstream processing
-- **Maintainability**: Clear separation of concerns
-
-### 4. Knowledge Base
-
-**Choice**: Synthetic domain registrar documentation
-
-**Rationale**:
-- Realistic scenario for Tucows (domain registrar)
-- Covers common support topics: suspension, billing, DNS, transfers
-- Demonstrates understanding of the domain
-
-### 5. Testing Strategy
-
-**Choice**: Mocked LLM for unit tests
-
-**Rationale**:
-- Fast, deterministic tests
-- No API costs during development
-- Integration tests can use real LLM when needed
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OPENAI_MODEL` | OpenAI model name | `gpt-4o-mini` |
+| `OPENAI_TEMPERATURE` | Response creativity (0-1) | `0.3` |
+| `OPENAI_MAX_TOKENS` | Max response length | `1024` |
+| `TOP_K_RESULTS` | Documents to retrieve | `5` |
+| `SIMILARITY_THRESHOLD` | Min similarity score | `0.3` |
+| `EMBEDDING_MODEL` | Sentence Transformer model | `all-MiniLM-L6-v2` |
 
 ---
 
-## License
+## 🧩 How It Works
 
-MIT License - See LICENSE file for details.
+### 1. Document Indexing (One-Time Setup)
+```
+Documents → Chunking → Embedding → FAISS Vector Database
+```
+- Documents are split into semantic chunks (topic-aware)
+- Each chunk is embedded using Sentence Transformers
+- Embeddings stored in FAISS for fast similarity search
+
+### 2. Ticket Resolution (Per Query)
+```
+Ticket → Embed → Search (Hybrid) → Rerank → Build Prompt (MCP) → LLM → Response
+```
+- Customer ticket is embedded
+- Hybrid search retrieves relevant docs (semantic + keyword)
+- Cross-encoder reranks results
+- MCP prompt built with context
+- OpenAI generates structured response
+
+### 3. Model Context Protocol (MCP)
+
+MCP is a structured prompt engineering pattern with four sections:
+
+```
+┌─────────────────────────────────────────────┐
+│ ROLE: Expert support assistant identity     │
+├─────────────────────────────────────────────┤
+│ CONTEXT: Retrieved documents from RAG       │
+├─────────────────────────────────────────────┤
+│ TASK: Customer ticket + instructions        │
+├─────────────────────────────────────────────┤
+│ OUTPUT: JSON schema specification           │
+└─────────────────────────────────────────────┘
+```
+
+This ensures:
+- **Consistency:** Same structure every time
+- **Grounding:** Responses based on actual documentation
+- **Parseable:** Structured JSON for downstream processing
 
 ---
 
-## Acknowledgments
+## 🎓 Design Decisions
 
+### Why FAISS?
+- **Fast:** Optimized for billion-scale similarity search
+- **Simple:** No external database server required
+- **Battle-Tested:** Used by Facebook, Spotify, Airbnb
+- **Persistent:** Can save/load index to disk
+
+### Why Hybrid Search?
+- **Semantic Search:** Finds conceptually similar content
+- **Keyword Search (BM25):** Finds exact term matches
+- **Cross-Encoder Reranking:** Improves final ranking
+- **Result:** Better retrieval accuracy than either alone
+
+### Why Semantic Chunking?
+- **Topic-Aware:** Splits at semantic boundaries, not arbitrary character limits
+- **Context Preservation:** Keeps related information together
+- **Better Retrieval:** More meaningful chunks = better search results
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [OpenAI](https://openai.com/) for GPT models
+- [FAISS](https://faiss.ai/) by Facebook AI for vector search
 - [Sentence Transformers](https://www.sbert.net/) for embeddings
-- [FAISS](https://faiss.ai/) for vector search
 - [FastAPI](https://fastapi.tiangolo.com/) for the web framework
-- [OpenAI](https://openai.com/) for LLM capabilities
+- [Streamlit](https://streamlit.io/) for the UI framework
+
+---
+
+## 📧 Contact
+
+**Kaxit Pandya** - [GitHub](https://github.com/KaxitPandya)
+
+**Project Link:** [https://github.com/KaxitPandya/ai-support-agent](https://github.com/KaxitPandya/ai-support-agent)
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if you find it helpful!**
+
+Built with ❤️ using OpenAI, FAISS, FastAPI, and Streamlit
+
+</div>
