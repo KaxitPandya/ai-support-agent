@@ -1,5 +1,0 @@
-# System-level dependencies for Streamlit Cloud
-# These packages will be installed via apt-get
-
-# Required for FAISS (if needed)
-# libgomp1
