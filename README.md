@@ -197,41 +197,6 @@ curl -X POST http://localhost:8000/resolve-ticket \
   -d '{"ticket_text": "My domain was suspended. How can I reactivate it?"}'
 ```
 
-### Option 3: FastAPI Backend Only
-
-```bash
-# 1. Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Set environment variables
-export OPENAI_API_KEY=sk-your-key-here
-export LLM_PROVIDER=openai
-
-# 4. Run the application
-uvicorn src.main:app --reload
-
-# 5. Open API docs
-# Navigate to http://localhost:8000/docs
-```
-
-### Using Local LLM (Ollama)
-
-```bash
-# 1. Start with Ollama profile
-docker-compose --profile local-llm up --build
-
-# 2. Pull a model (in another terminal)
-docker exec -it ollama ollama pull llama2
-
-# 3. Configure environment
-export LLM_PROVIDER=ollama
-export OLLAMA_MODEL=llama2
-```
-
 ---
 
 ## 🚀 Deploy to Streamlit Cloud
@@ -448,12 +413,6 @@ The test suite covers:
 - ✅ API endpoints (validation, error handling)
 - ✅ MCP prompt templates (structure, content)
 
-### Running Tests in Docker
-
-```bash
-docker-compose run --rm knowledge-assistant pytest
-```
-
 ---
 
 ## Project Structure
@@ -582,24 +541,6 @@ In this project, MCP refers to a **structured prompt engineering pattern**, NOT 
 
 ---
 
-## Performance Notes
-
-| Operation | Latency |
-|-----------|---------|
-| Embedding (single text) | ~50-80ms |
-| Vector search (1000 docs) | <10ms |
-| LLM generation (GPT-4o-mini) | ~1-2s |
-| **Total (end-to-end)** | **~2-3s** |
-
-### Optimization Opportunities
-
-1. **Batch Embedding**: Pre-compute embeddings for knowledge base
-2. **Caching**: Cache frequent queries with Redis
-3. **Streaming**: Stream LLM responses for better UX
-4. **Async**: Use async LLM clients for concurrency
-
----
-
 ## License
 
 MIT License - See LICENSE file for details.
@@ -612,4 +553,3 @@ MIT License - See LICENSE file for details.
 - [FAISS](https://faiss.ai/) for vector search
 - [FastAPI](https://fastapi.tiangolo.com/) for the web framework
 - [OpenAI](https://openai.com/) for LLM capabilities
-- [Ollama](https://ollama.ai/) for local LLM support
