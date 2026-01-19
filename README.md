@@ -132,7 +132,7 @@ graph TB
     USER[👤 User]
 
     subgraph "Interface Layer"
-        STREAMLIT[🎨 Streamlit UI<br/>5 pages]
+        STREAMLIT[🎨 Streamlit UI]
         FASTAPI[⚡ FastAPI REST API<br/>/resolve-ticket]
     end
 
@@ -369,7 +369,7 @@ graph TB
 Visit the live demo at **[https://ai-support-agent1.streamlit.app/](https://ai-support-agent1.streamlit.app/)**
 
 - ✅ Fully functional RAG pipeline with MCP
-- ✅ All 5 UI pages available (including Pipeline Explorer!)
+- ✅ All UI pages available (including Pipeline Explorer!)
 - ✅ No API key needed (using shared instance)
 - ✅ Try sample queries instantly
 
@@ -501,11 +501,11 @@ Vector database statistics and metrics.
 
 ```json
 {
-  "total_vectors": 156,
-  "total_documents": 156,
+  "total_vectors": 19,
+  "total_documents": 19,
   "dimension": 384,
   "index_type": "IndexFlatIP (Cosine Similarity)",
-  "uploaded_files_count": 8
+  "uploaded_files_count": 0
 }
 ```
 
@@ -706,7 +706,7 @@ Open the Streamlit app → Navigate to **🔍 Pipeline Explorer** in the sidebar
 **Monitor system performance:**
 
 - 📈 **Usage Metrics**
-  - Total documents indexed (156+ base documents)
+  - Total documents indexed (19 base documents)
   - Tickets resolved count
   - Uploaded files tracking
   - Memory usage statistics
@@ -787,7 +787,7 @@ ai-support-agent/
 ├── 🐳 docker-compose.yml         # Orchestration configuration
 ├── 📦 requirements.txt           # Python dependencies
 ├── 🔧 env.example                # Environment template
-├── 📖 ACCURATE_SYSTEM_FLOWCHART.md  # Detailed architecture (988 lines) 
+├── 📖 ACCURATE_SYSTEM_FLOWCHART.md  # Detailed architecture
 │
 ├── src/                          # Core application code
 │   ├── main.py                  # FastAPI application entry
@@ -800,7 +800,7 @@ ai-support-agent/
 │   ├── 📊 models/                # Data models
 │   │   └── schemas.py           # Pydantic models (Document, TicketResponse)
 │   │
-│   ├── 🔧 services/              # Core business logic (3,097 lines)
+│   ├── 🔧 services/              # Core business logic
 │   │   ├── rag.py               # 🧠 RAG pipeline orchestrator + memory
 │   │   ├── vector_store.py      # 🗄️ FAISS vector database
 │   │   ├── embedding.py         # 📊 Sentence Transformers
@@ -811,7 +811,7 @@ ai-support-agent/
 │   │   └── document_processor.py # 📤 File upload handler
 │   │
 │   ├── 📚 data/                  # Knowledge base
-│   │   └── knowledge_base.py    # 156 base support documents
+│   │   └── knowledge_base.py    # 19 base support documents
 │   │
 │   └── 📝 prompts/               # Prompt engineering
 │       └── mcp_prompt.py        # MCP-compliant templates with memory 
