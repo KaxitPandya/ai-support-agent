@@ -6,7 +6,7 @@
 
 ---
 
-**Enhanced Features:**
+**Features:**
 - 🌐 **Hosted Streamlit Website**
 - 🧠 **Session Memory System** for conversation continuity
 - 🔍 **Hybrid Search** (Semantic + BM25 + Cross-Encoder Reranking)
