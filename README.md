@@ -15,7 +15,7 @@
 - ✅ **138 Comprehensive Unit Tests** with pytest
 - 📈 **Analytics Dashboard** with real-time metrics
 
-**Built with cutting-edge AI technologies:** OpenAI GPT-4o · RAG · MCP · FAISS Vector Database · Sentence Transformers · Session memory · Hybrdi Search FastAPI · Streamlit · Docker
+**Built with:** OpenAI GPT-4o · RAG · MCP · FAISS · Sentence Transformers · Hybrid Search · FastAPI · Streamlit · Docker
 
 [🚀 Live Demo](https://ai-support-agent1.streamlit.app/)
 
@@ -845,13 +845,13 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 
 **Combines 3 retrieval methods for better accuracy:**
 
-#### 1. Semantic Search (Vector Similarity)
+| Method | Description |
+|--------|-------------|
+| **Semantic Search** | FAISS vector similarity finds conceptually related documents |
+| **BM25 Keyword** | TF-IDF scoring matches exact terms and phrases |
+| **Cross-Encoder Reranking** | Neural model re-scores top results for precision |
 
-#### 2. Keyword Search (BM25)
-
-#### 3. Cross-Encoder Reranking
-
-**Result:** Captures both **meaning** (semantic) and **specifics** (keywords), then refines with neural reranking.
+**Score Fusion:** `0.7 × semantic + 0.3 × keyword` → Top-K results reranked
 
 ### 🧠 Session Memory System
 
