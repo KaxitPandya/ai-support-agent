@@ -102,7 +102,7 @@ docker-compose up --build
 
 **Test the API:**
 ```bash
-curl -X POST http://localhost:8000/resolve-ticket \
+curl -X POST "http://localhost:8000/resolve-ticket" \
   -H "Content-Type: application/json" \
   -d '{"ticket_text": "How do I transfer my domain to another registrar?"}'
 ```
@@ -451,7 +451,7 @@ Generate AI-powered response for a customer query.
 Add new documents to knowledge base.
 
 ```bash
-curl -X POST http://localhost:8000/api/documents/upload \
+curl -X POST "http://localhost:8000/api/documents/upload" \
   -F "file=@new_policy.md" \
   -F "category=Domain Policies" \
   -F "index_immediately=true"
