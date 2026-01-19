@@ -24,6 +24,8 @@
 ## 📑 Table of Contents
 
 - [🎯 What Makes This Special?](#-what-makes-this-special)
+- [🚀 Quick Start](#quick-start)
+- [🛠️ Technology Stack](#technology-stack)
 - [✨ Core Features](#-core-features)
 - [🏗️ Complete System Architecture](#%EF%B8%8F-complete-system-architecture)
 - [📖 API Reference](#-api-reference)
@@ -60,6 +62,68 @@ Transform raw customer queries into accurate, policy-compliant responses **insta
 ```
 
 **The result?** Support teams resolve tickets **faster** with **consistent, accurate responses** every time.
+
+---
+
+## Quick Start
+
+### Option 1: Live Demo (Instant Access)
+
+**Try it now - no installation required:**
+
+Visit the live demo at **[https://ai-support-agent1.streamlit.app/](https://ai-support-agent1.streamlit.app/)**
+
+- ✅ Fully functional RAG pipeline with MCP
+- ✅ All UI pages available (including Pipeline Explorer!)
+- ✅ No API key needed (using shared instance)
+- ✅ Try sample queries instantly
+
+### Option 2 - Docker
+
+**Get running in 60 seconds:**
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/KaxitPandya/ai-support-agent.git
+cd ai-support-agent
+
+# 2. Create .env file with your OpenAI key
+cp env.example .env
+# Edit .env: OPENAI_API_KEY=sk-your-key-here
+
+# 3. Launch with Docker Compose using Docker Desktop
+docker-compose up --build
+
+# ✅ Done! Access your app:
+# 🌐 API:        http://localhost:8000
+# 📚 API Docs:   http://localhost:8000/docs
+# ❤️ Health:     http://localhost:8000/health
+```
+
+**Test the API:**
+```bash
+curl -X POST http://localhost:8000/resolve-ticket \
+  -H "Content-Type: application/json" \
+  -d '{"ticket_text": "How do I transfer my domain to another registrar?"}'
+```
+
+---
+
+## Technology Stack
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **🤖 LLM** | OpenAI GPT-4o-mini | Natural language understanding & generation |
+| **🗄️ Vector DB** | FAISS (IndexFlatIP) | Lightning-fast cosine similarity search |
+| **📊 Embeddings** | Sentence Transformers (all-MiniLM-L6-v2) | Text → 384-dim vectors |
+| **🔍 Search** | Hybrid (Semantic + BM25 + Reranking) | better retrieval accuracy |
+| **🧠 Memory** | Session-based (in-memory deque) | Conversation continuity (10 turns) |
+| **📋 Prompts** | MCP (Model Context Protocol) | Structured prompt engineering |
+| **✂️ Chunking** | Semantic (topic-aware) | Context-preserving document splitting |
+| **⚡ API** | FastAPI | Async Python web framework |
+| **🎨 UI** | Streamlit | Interactive data applications |
+| **🐳 Deploy** | Docker + Docker Compose | Containerized deployment |
+| **✅ Testing** | Pytest (138 tests) | Comprehensive test coverage |
 
 ---
 
@@ -341,66 +405,6 @@ graph TB
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Technology Stack
-
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **🤖 LLM** | OpenAI GPT-4o-mini | Natural language understanding & generation |
-| **🗄️ Vector DB** | FAISS (IndexFlatIP) | Lightning-fast cosine similarity search |
-| **📊 Embeddings** | Sentence Transformers (all-MiniLM-L6-v2) | Text → 384-dim vectors |
-| **🔍 Search** | Hybrid (Semantic + BM25 + Reranking) | 40% better retrieval accuracy |
-| **🧠 Memory** | Session-based (in-memory deque) | Conversation continuity (10 turns) |
-| **📋 Prompts** | MCP (Model Context Protocol) | Structured prompt engineering |
-| **✂️ Chunking** | Semantic (topic-aware) | Context-preserving document splitting |
-| **⚡ API** | FastAPI | Async Python web framework |
-| **🎨 UI** | Streamlit | Interactive data applications |
-| **🐳 Deploy** | Docker + Docker Compose | Containerized deployment |
-| **✅ Testing** | Pytest (138 tests) | Comprehensive test coverage |
-
----
-
-## Quick Start
-
-### Option 1: Live Demo (Instant Access)
-
-**Try it now - no installation required:**
-
-Visit the live demo at **[https://ai-support-agent1.streamlit.app/](https://ai-support-agent1.streamlit.app/)**
-
-- ✅ Fully functional RAG pipeline with MCP
-- ✅ All UI pages available (including Pipeline Explorer!)
-- ✅ No API key needed (using shared instance)
-- ✅ Try sample queries instantly
-
-### Option 2 - Docker
-
-**Get running in 60 seconds:**
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/KaxitPandya/ai-support-agent.git
-cd ai-support-agent
-
-# 2. Create .env file with your OpenAI key
-cp env.example .env
-# Edit .env: OPENAI_API_KEY=sk-your-key-here
-
-# 3. Launch with Docker Compose using Docker Desktop
-docker-compose up --build
-
-# ✅ Done! Access your app:
-# 🌐 API:        http://localhost:8000
-# 📚 API Docs:   http://localhost:8000/docs
-# ❤️ Health:     http://localhost:8000/health
-```
-
-**Test the API:**
-```bash
-curl -X POST http://localhost:8000/resolve-ticket \
-  -H "Content-Type: application/json" \
-  -d '{"ticket_text": "How do I transfer my domain to another registrar?"}'
-```
-
 ---
 
 ## 📖 API Reference
@@ -554,7 +558,7 @@ System health and version info.
 - Embedding generation (384-dim)
 - Vector indexing (FAISS)
 
-### 🔍 3. Pipeline Explorer 
+### 🔍 3. Pipeline Explorer
 
 **The most comprehensive RAG + Memory visualization tool!**
 
@@ -577,7 +581,7 @@ See exactly what the LLM receives in its prompt:
 
 ```
 ================================================================================
-                         MEMORY SECTION 
+                         MEMORY SECTION
               (Relevant Past Conversations for Context)
 ================================================================================
 
@@ -775,7 +779,7 @@ ai-support-agent/
 │   │   ├── embedding.py         # 📊 Sentence Transformers
 │   │   ├── llm.py               # 🤖 OpenAI integration
 │   │   ├── hybrid_search.py     # 🔍 Semantic + BM25 + reranking
-│   │   ├── simple_memory.py     # 💾 Session memory 
+│   │   ├── simple_memory.py     # 💾 Session memory
 │   │   ├── semantic_chunker.py  # 📄 Topic-aware chunking
 │   │   └── document_processor.py # 📤 File upload handler
 │   │
@@ -783,7 +787,7 @@ ai-support-agent/
 │   │   └── knowledge_base.py    # 19 base support documents
 │   │
 │   └── 📝 prompts/               # Prompt engineering
-│       └── mcp_prompt.py        # MCP-compliant templates with memory 
+│       └── mcp_prompt.py        # MCP-compliant templates with memory
 │
 ├── tests/                        # 138 unit tests (11 test files)
 │   ├── conftest.py              # Pytest fixtures
@@ -791,9 +795,9 @@ ai-support-agent/
 │   ├── test_vector_store.py     # Vector DB tests
 │   ├── test_embedding.py        # Embedding tests
 │   ├── test_hybrid_search.py    # Hybrid search tests
-│   ├── test_simple_memory.py    # Session memory tests 
-│   ├── test_knowledge_base.py   # Knowledge base tests 
-│   ├── test_llm.py              # LLM service tests 
+│   ├── test_simple_memory.py    # Session memory tests
+│   ├── test_knowledge_base.py   # Knowledge base tests
+│   ├── test_llm.py              # LLM service tests
 │   ├── test_api.py              # API endpoint tests
 │   ├── test_prompts.py          # MCP prompt tests
 │   ├── test_semantic_chunker.py # Chunking tests
@@ -871,7 +875,7 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 ```
 User Query: "How long will that take?"
     ↓
-┌───────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────────┐
 │ 1. Check Session Memory                                  │
 │    → Found 1 previous turn                                │
 │    → Retrieve last 3 turns (or all if < 3)                │
