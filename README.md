@@ -598,50 +598,6 @@ Interactive 7-step pipeline showing the full execution path:
 6. 💾 Store in Session Memory (for next turn)
 7. ✅ Return Response to User
 
-**Visual representation with color-coded stages!**
-
-#### **👁️ LLM Prompt Inspector**
-See exactly what the LLM receives in its prompt:
-
-```
-================================================================================
-                         MEMORY SECTION
-              (Relevant Past Conversations for Context)
-================================================================================
-
-## Recent Conversation History
-
-### Turn 1:
-**Customer Query:** How do I reactivate my suspended domain?
-**Your Previous Response:** To reactivate your domain, log into your portal...
-**Action Taken:** customer_action_required
-
-Use this conversation history to maintain continuity...
-
-================================================================================
-                          CONTEXT SECTION
-                (Retrieved from Knowledge Base via RAG)
-================================================================================
-
-### Document 1: Policy - Domain Suspension Guidelines
-**Similarity Score:** 95.00%
-Domains suspended for WHOIS verification failure can be reactivated...
-
-================================================================================
-                           TASK SECTION
-================================================================================
-
-Customer Ticket: "How long will that take?"
-
-[Analysis instructions...]
-```
-
-**Key Insights:**
-- ✅ Memory integration: See how past conversations influence responses
-- ✅ Context retrieval: View which documents were selected and why
-- ✅ Follow-up handling: Understand coreference resolution ("that" → "domain reactivation")
-- ✅ Real examples: Interactive scenarios with before/after prompts
-
 #### **🧠 Session Memory Inspector**
 Browse and manage conversation history:
 
