@@ -1,17 +1,43 @@
 # 🧠 AI Support Agent - Enterprise RAG Knowledge Assistant
 
+> **AI Coding Challenge Submission** - Advanced RAG system for support team knowledge assistance
+
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Streamlit_Cloud-FF4B4B?style=for-the-badge)](https://ai-support-agent1.streamlit.app/)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
-[![OpenAI GPT-4](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/Tests-138_Passing-brightgreen?style=for-the-badge)](tests/)
 
 > **Production-ready RAG (Retrieval-Augmented Generation) system that transforms customer support with AI-powered, context-aware responses grounded in your documentation.**
 
-**Built with cutting-edge AI technologies:** OpenAI GPT-4o · FAISS Vector Database · Sentence Transformers · FastAPI · Streamlit · Docker
+---
 
-[🚀 Live Demo](https://ai-support-agent1.streamlit.app/) | [📖 Documentation](#-table-of-contents) | [🐳 Quick Start with Docker](#option-1-docker-recommended) | [⚡ API Docs](http://localhost:8000/docs)
+**Enhanced Features:**
+- 🌐 **Hosted Streamlit Website**
+- 🧠 **Session Memory System** for conversation continuity
+- 🔍 **Hybrid Search** (Semantic + BM25 + Cross-Encoder Reranking)
+- ✂️ **Semantic Chunking** (topic-aware document splitting)
+- 📤 **Dynamic Document Upload** via API and UI
+- ✅ **138 Comprehensive Unit Tests** with pytest
+- 📈 **Analytics Dashboard** with real-time metrics
+
+**Built with cutting-edge AI technologies:** OpenAI GPT-4o · RAG · MCP · FAISS Vector Database · Sentence Transformers · FastAPI · Streamlit · Docker
+
+[🚀 Live Demo](https://ai-support-agent1.streamlit.app/) | [📖 Documentation](#-table-of-contents) | [🐳 Quick Start with Docker](#option-2-docker-recommended-for-local-setup)
+
+---
+
+## 📑 Table of Contents
+
+- [🎯 What Makes This Special?](#-what-makes-this-special)
+- [✨ Core Features](#-core-features)
+- [🏗️ Complete System Architecture](#️-complete-system-architecture)
+- [🚀 Quick Start](#-quick-start)
+- [📖 API Reference](#-api-reference)
+- [🎨 Features Deep Dive](#-features-deep-dive)
+- [🧪 Testing & Quality](#-testing--quality)
+- [📁 Project Structure](#-project-structure)
+- [⚙️ Configuration](#️-configuration)
+- [🎓 How It Works](#-how-it-works)
+- [🚀 Advanced Features](#-advanced-features-deep-dive)
+- [📧 Contact](#-contact)
 
 ---
 
@@ -38,7 +64,7 @@ Transform raw customer queries into accurate, policy-compliant responses **insta
 }
 ```
 
-**The result?** Support teams resolve tickets **3x faster** with **consistent, accurate responses** every time.
+**The result?** Support teams resolve tickets **faster** with **consistent, accurate responses** every time.
 
 ---
 
@@ -57,30 +83,19 @@ Transform raw customer queries into accurate, policy-compliant responses **insta
 <td width="50%">
 
 ### 🧠 **Intelligence & Memory**
-- **Conversation Memory** - Short-term + long-term memory for consistent responses
-- **Learning System** - Stores feedback and improves over time
-- **Similar Query Detection** - Recognizes repeat questions for instant answers
+- **Session Memory** - In-memory conversation history (last 10 turns)
+- **Context Window** - Last 3 turns included in LLM prompts
+- **Follow-up Support** - Natural conversation flow with coreference resolution
+- **Cloud-Ready** - Perfect for Streamlit Cloud deployment
 
 </td>
-</tr>
-<tr>
-<td>
 
-### 🎨 **Professional UI**
-- **Beautiful Streamlit Interface** - 5 feature-rich pages
-- **Ticket Resolution** - AI-powered response generator
-- **Knowledge Base Manager** - Upload and organize docs
-- **RAG Inspector** - Debug and visualize retrieval
-- **Analytics Dashboard** - Track performance metrics
-- **Settings Panel** - Configure RAG parameters
-
-</td>
 <td>
 
 ### ⚡ **Developer Experience**
 - **FastAPI Backend** - Async REST API with OpenAPI docs
 - **Docker-Ready** - One command deployment
-- **114+ Unit Tests** - Comprehensive test coverage
+- **138 Unit Tests** - Comprehensive test coverage
 - **Type-Safe** - Full type hints with Pydantic
 - **Production-Ready** - Error handling, logging, monitoring
 
@@ -97,6 +112,9 @@ Structured prompt engineering that ensures **consistent, grounded responses**:
 │ 🎭 ROLE                                     │
 │ Expert support assistant identity           │
 ├─────────────────────────────────────────────┤
+│ 💬 MEMORY                                   │
+│ Last 3 conversation turns with context      │
+├─────────────────────────────────────────────┤
 │ 📚 CONTEXT                                  │
 │ Retrieved docs from hybrid search           │
 ├─────────────────────────────────────────────┤
@@ -110,59 +128,247 @@ Structured prompt engineering that ensures **consistent, grounded responses**:
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ Complete System Architecture
+
+### System Architecture Overview
+
+```mermaid
+graph TB
+    USER[👤 User]
+
+    subgraph "Interface Layer"
+        STREAMLIT[🎨 Streamlit UI<br/>5 pages]
+        FASTAPI[⚡ FastAPI REST API<br/>/resolve-ticket]
+    end
+
+    subgraph "Pipeline 1: Document Indexing"
+        UPLOAD[📤 Document Upload<br/>.txt, .md files]
+        DOCPROC[📝 Document Processor<br/>Metadata extraction]
+        SEMANTIC_CHUNK[✂️ Semantic Chunker<br/>Topic-aware splitting]
+        CHUNKS[📄 Document Chunks]
+    end
+
+    subgraph "Embedding & Storage Layer"
+        EMBED_SVC[🔢 Embedding Service<br/>all-MiniLM-L6-v2]
+        VECTORS[🎯 384-dim Vectors]
+        FAISS[💾 FAISS Vector Store<br/>IndexFlatIP]
+        PERSIST[💿 Disk Persistence<br/>./data/vector_store/]
+    end
+
+    subgraph "Pipeline 2: Ticket Resolution with Memory"
+        TICKET[🎫 Customer Ticket Query]
+
+        subgraph "Memory System ⭐"
+            MEM_CHECK{🧠 Check Memory?}
+            SESSION_MEM[💬 Session Memory<br/>Last 10 turns<br/>Context window: 3]
+            MEM_CONTEXT[📋 Memory Context<br/>Last 3 conversations]
+        end
+
+        QUERY_EMBED[🔢 Query Embedding]
+
+        subgraph "Hybrid Search System"
+            HYBRID_SVC[🔍 Hybrid Search]
+            SEM_SEARCH[🎯 Semantic Search<br/>FAISS cosine similarity]
+            BM25_SEARCH[📊 BM25 Keyword<br/>TF-IDF scoring]
+            SCORE_MERGE[⚖️ Score Fusion<br/>0.7×semantic + 0.3×keyword]
+            RERANKER[🏆 Cross-Encoder<br/>Reranking]
+        end
+
+        TOP_K[📊 Top-K Results<br/>default: 5]
+
+        subgraph "MCP Prompt Building"
+            MCP_BUILDER[📋 MCP Prompt Builder]
+            ROLE[🎭 ROLE Section]
+            MEM_SEC[💭 MEMORY Section<br/>Past 3 turns ⭐]
+            CTX_SEC[📚 CONTEXT Section<br/>Retrieved documents]
+            TASK_SEC[📝 TASK Section<br/>Customer query]
+            SCHEMA_SEC[📤 OUTPUT SCHEMA]
+        end
+
+        MESSAGES[📨 Structured Messages]
+    end
+
+    subgraph "LLM Generation Layer"
+        LLM_SVC[🤖 LLM Service]
+        GPT[🧠 OpenAI GPT-4o-mini<br/>JSON mode<br/>Temperature: 0.3]
+        JSON_PARSE[✅ JSON Parser]
+    end
+
+    subgraph "Response Layer"
+        RESPONSE[📤 Ticket Response<br/>answer + references + action]
+        ACTIONS{Action Required?<br/>6 types}
+    end
+
+    %% User interaction
+    USER -->|Upload docs| STREAMLIT
+    USER -->|Query| STREAMLIT
+    USER -->|API request| FASTAPI
+
+    %% Interface routing
+    STREAMLIT --> UPLOAD
+    STREAMLIT --> TICKET
+    FASTAPI --> TICKET
+
+    %% Document Processing Flow
+    UPLOAD --> DOCPROC
+    DOCPROC --> SEMANTIC_CHUNK
+    SEMANTIC_CHUNK --> CHUNKS
+
+    %% Embedding Flow
+    CHUNKS --> EMBED_SVC
+    EMBED_SVC --> VECTORS
+    VECTORS --> FAISS
+    FAISS <--> PERSIST
+
+    %% Ticket Resolution Flow - Memory
+    TICKET --> MEM_CHECK
+    MEM_CHECK -->|Has history| SESSION_MEM
+    SESSION_MEM -->|Retrieve last 3 turns| MEM_CONTEXT
+    MEM_CHECK -->|No history| QUERY_EMBED
+
+    %% Query Embedding
+    TICKET --> QUERY_EMBED
+    QUERY_EMBED --> HYBRID_SVC
+
+    %% Hybrid Search Flow
+    HYBRID_SVC --> SEM_SEARCH
+    HYBRID_SVC --> BM25_SEARCH
+    FAISS --> SEM_SEARCH
+    FAISS -.->|Documents| BM25_SEARCH
+    SEM_SEARCH --> SCORE_MERGE
+    BM25_SEARCH --> SCORE_MERGE
+    SCORE_MERGE --> RERANKER
+    RERANKER --> TOP_K
+
+    %% MCP Prompt Building
+    TOP_K -->|Retrieved docs + scores| MCP_BUILDER
+    MEM_CONTEXT -->|Conversation history ⭐| MCP_BUILDER
+    MCP_BUILDER --> ROLE
+    ROLE --> MEM_SEC
+    MEM_SEC -->|Injects memory| CTX_SEC
+    CTX_SEC -->|Adds retrieved context| TASK_SEC
+    TASK_SEC -->|Adds current query| SCHEMA_SEC
+    SCHEMA_SEC -->|Defines JSON format| MESSAGES
+
+    %% LLM Generation
+    MESSAGES -->|Prompt with memory + context| LLM_SVC
+    LLM_SVC -->|API call| GPT
+    GPT -->|JSON response| JSON_PARSE
+
+    %% Response handling
+    JSON_PARSE --> RESPONSE
+    RESPONSE --> ACTIONS
+    ACTIONS -->|Store Q&A for next turn ⭐| SESSION_MEM
+
+    %% Return to user
+    RESPONSE --> STREAMLIT
+    RESPONSE --> FASTAPI
+    FASTAPI --> USER
+    STREAMLIT --> USER
+
+    %% Styling
+    classDef uiLayer fill:#2F59A3,stroke:#254A8D,stroke-width:3px,color:#fff
+    classDef docLayer fill:#28A745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    classDef embeddingLayer fill:#F5A623,stroke:#e59400,stroke-width:2px,color:#000
+    classDef searchLayer fill:#E53935,stroke:#c62828,stroke-width:2px,color:#fff
+    classDef memoryLayer fill:#00ACC1,stroke:#00838F,stroke-width:2px,color:#fff
+    classDef mcpLayer fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:#fff
+    classDef llmLayer fill:#673AB7,stroke:#512DA8,stroke-width:2px,color:#fff
+    classDef responseLayer fill:#2F59A3,stroke:#254A8D,stroke-width:2px,color:#fff
+
+    class USER,STREAMLIT,FASTAPI uiLayer
+    class UPLOAD,DOCPROC,SEMANTIC_CHUNK,CHUNKS docLayer
+    class EMBED_SVC,VECTORS,FAISS,PERSIST embeddingLayer
+    class HYBRID_SVC,SEM_SEARCH,BM25_SEARCH,SCORE_MERGE,RERANKER,TOP_K,QUERY_EMBED searchLayer
+    class MEM_CHECK,SESSION_MEM,MEM_CONTEXT memoryLayer
+    class MCP_BUILDER,ROLE,MEM_SEC,CTX_SEC,TASK_SEC,SCHEMA_SEC,MESSAGES mcpLayer
+    class LLM_SVC,GPT,JSON_PARSE llmLayer
+    class RESPONSE,ACTIONS responseLayer
+
+### 🔄 Complete Flow with Memory Integration
+
+**7-Step Pipeline Execution:**
 
 ```
-┌───────────────────────────────────────────────────────────────┐
-│                      Customer Support Ticket                  │
-│              "My domain was suspended..."                     │
-└──────────────────────────┬────────────────────────────────────┘
-                           ▼
-┌───────────────────────────────────────────────────────────────┐
-│                   🔍 Hybrid Search Engine                     │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │   Semantic   │  │   Keyword    │  │  Reranking   │       │
-│  │  (FAISS +    │+│   (BM25)     │→│(Cross-Encoder)│       │
-│  │ Embeddings)  │  │              │  │              │       │
-│  └──────────────┘  └──────────────┘  └──────┬───────┘       │
-└────────────────────────────────────────────┬─────────────────┘
-                                             ▼
-┌───────────────────────────────────────────────────────────────┐
-│               📊 Context Augmentation (MCP)                   │
-│  • Retrieved relevant docs (top-5 with scores)                │
-│  • Conversation memory (past interactions)                    │
-│  • Structured prompt template                                 │
-└──────────────────────────┬────────────────────────────────────┘
-                           ▼
-┌───────────────────────────────────────────────────────────────┐
-│              🤖 OpenAI GPT-4o / GPT-4o-mini                   │
-│                   JSON Mode Response                          │
-└──────────────────────────┬────────────────────────────────────┘
-                           ▼
-┌───────────────────────────────────────────────────────────────┐
-│         ✅ Structured Output (Answer + References)            │
-│              Validation + Post-Processing                     │
-└───────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ 📝 Step 1: User Query                                          │
+│    "How do I reactivate my suspended domain?"                   │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 🧠 Step 2: Check Session Memory                               │
+│    • Retrieve last 3 conversation turns (if any)                │
+│    • Format as context for LLM                                  │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔍 Step 3: Hybrid Search (RAG)                                  │
+│    • Semantic (FAISS): Find similar vectors                     │
+│    • Keyword (BM25): Match exact terms                          │
+│    • Reranking: Cross-encoder scoring                           │
+│    → Top-5 relevant documents with scores                       │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 📋 Step 4: Build MCP Prompt                                     │
+│    ┌──────────────────────────────────────────────────────┐    │
+│    │ MEMORY SECTION (conversation history)             │    │
+│    │ + CONTEXT SECTION (retrieved documents)             │    │
+│    │ + TASK SECTION (user query)                         │    │
+│    │ + OUTPUT SCHEMA (JSON format)                       │    │
+│    └──────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 🤖 Step 5: LLM Generation                                       │
+│    GPT-4o-mini receives full prompt and generates JSON response │
+│    (LLM sees previous conversations + retrieved docs!)        │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 💾 Step 6: Store in Session Memory                            │
+│    Save conversation turn (Q + A + references + action)         │
+│    → Available for next query's MEMORY section                  │
+└─────────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ ✅ Step 7: Return Response                                      │
+│    Display answer, references, and required action to user      │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Technology Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **🤖 LLM** | OpenAI GPT-4o / GPT-4o-mini | Natural language understanding & generation |
-| **🗄️ Vector DB** | FAISS (Facebook AI Similarity Search) | Lightning-fast similarity search (sub-ms latency) |
+| **🤖 LLM** | OpenAI GPT-4o-mini | Natural language understanding & generation |
+| **🗄️ Vector DB** | FAISS (IndexFlatIP) | Lightning-fast cosine similarity search |
 | **📊 Embeddings** | Sentence Transformers (all-MiniLM-L6-v2) | Text → 384-dim vectors |
 | **🔍 Search** | Hybrid (Semantic + BM25 + Reranking) | 40% better retrieval accuracy |
+| **🧠 Memory** | Session-based (in-memory deque) | Conversation continuity (10 turns) |
+| **📋 Prompts** | MCP (Model Context Protocol) | Structured prompt engineering |
+| **✂️ Chunking** | Semantic (topic-aware) | Context-preserving document splitting |
 | **⚡ API** | FastAPI | Async Python web framework |
 | **🎨 UI** | Streamlit | Interactive data applications |
 | **🐳 Deploy** | Docker + Docker Compose | Containerized deployment |
-| **✅ Testing** | Pytest (114+ tests) | Unit + integration testing |
+| **✅ Testing** | Pytest (138 tests) | Comprehensive test coverage |
 
 ---
 
 ## 🚀 Quick Start
 
-### Option 1: Docker (Recommended)
+### Option 1: Live Demo (Instant Access)
+
+**Try it now - no installation required:**
+
+Visit the live demo at **[https://ai-support-agent1.streamlit.app/](https://ai-support-agent1.streamlit.app/)**
+
+- ✅ Fully functional RAG pipeline with MCP
+- ✅ All 5 UI pages available (including Pipeline Explorer!)
+- ✅ No API key needed (using shared instance)
+- ✅ Try sample queries instantly
+
+### Option 2: Docker (Recommended for Local Setup)
 
 **Get running in 60 seconds:**
 
@@ -191,115 +397,8 @@ curl -X POST http://localhost:8000/resolve-ticket \
   -d '{"ticket_text": "How do I transfer my domain to another registrar?"}'
 ```
 
-### Option 2: Streamlit UI (Best for Demos)
-
-**Perfect for non-technical users:**
-
-```bash
-# 1. Clone and setup
-git clone https://github.com/KaxitPandya/ai-support-agent.git
-cd ai-support-agent
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-
-# 2. Configure environment
-cp env.example .env
-# Edit .env with your OpenAI API key
-
-# 3. Launch Streamlit UI
-streamlit run streamlit_app.py
-
-# ✅ Opens automatically at http://localhost:8501
-```
-
-**Features in the UI:**
-- 🎫 Resolve tickets with AI
-- 📚 Upload & manage documents
-- 🔬 Debug RAG pipeline
-- 📊 View analytics
-- ⚙️ Configure settings
-
-### Option 3: Local FastAPI Development
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run API in dev mode (auto-reload)
-uvicorn src.main:app --reload --port 8000
-
-# Access interactive docs
-open http://localhost:8000/docs
-```
-
 ---
 
-## 🌐 Deployment Options
-
-### ☁️ Deploy to Streamlit Cloud (Free & Easy)
-
-**1-Click deployment with free hosting:**
-
-1. **Fork this repo** to your GitHub account
-
-2. **Go to [share.streamlit.io](https://share.streamlit.io)** → Click "New app"
-
-3. **Configure:**
-   - Repository: `YOUR-USERNAME/ai-support-agent`
-   - Branch: `main`
-   - Main file: `streamlit_app.py`
-
-4. **Add secrets** (Settings → Secrets):
-   ```toml
-   OPENAI_API_KEY = "sk-your-actual-api-key"
-   OPENAI_MODEL = "gpt-4o-mini"
-   OPENAI_TEMPERATURE = "0.3"
-   OPENAI_MAX_TOKENS = "1024"
-   TOP_K_RESULTS = "5"
-   SIMILARITY_THRESHOLD = "0.3"
-   ```
-
-5. **Deploy** → Your app goes live at `https://your-app.streamlit.app` 🎉
-
-### 🐳 Deploy with Docker (Production)
-
-**Single container:**
-```bash
-docker build -t ai-support-agent .
-
-docker run -d \
-  -p 8000:8000 \
-  -e OPENAI_API_KEY=sk-your-key \
-  -v $(pwd)/data:/app/data \
-  --name support-agent \
-  ai-support-agent
-```
-
-**Docker Compose (recommended):**
-```bash
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f api
-
-# Stop services
-docker-compose down
-```
-
-### ☁️ Cloud Platforms
-
-Deploy to any platform that supports Docker:
-
-- **AWS**: ECS, Fargate, or EC2
-- **Google Cloud**: Cloud Run, GKE
-- **Azure**: Container Instances, AKS
-- **DigitalOcean**: App Platform
-- **Heroku**: Container Registry
-- **Railway, Render, Fly.io**: One-click deploy
-
----
 
 ## 📖 API Reference
 
@@ -417,14 +516,9 @@ System health and version info.
 }
 ```
 
-### 📚 Interactive Documentation
-
-- **Swagger UI (try it out)**: http://localhost:8000/docs
-- **ReDoc (beautiful docs)**: http://localhost:8000/redoc
-
 ---
 
-## 🎨 Streamlit UI Features
+## 🎨 Features Deep Dive
 
 ### 🎫 1. Ticket Resolution
 
@@ -454,35 +548,166 @@ System health and version info.
 - 🔄 **Reindex** - Rebuild vector database
 
 **Document Processing:**
-- Automatic semantic chunking
-- Metadata extraction
-- Embedding generation
-- Vector indexing
+- Automatic semantic chunking (topic-aware)
+- Metadata extraction (category, title)
+- Embedding generation (384-dim)
+- Vector indexing (FAISS)
 
-### 🔬 3. RAG Inspector
+### 🔍 3. Pipeline Explorer 
 
-**Debug and understand the retrieval system:**
+**The most comprehensive RAG + Memory visualization tool!**
 
-- 🔍 **Test Queries** - Try custom search queries
-- 📊 **Similarity Scores** - See relevance metrics for each result
-- 📝 **MCP Prompt Preview** - Inspect the generated prompt
-- 🎯 **Context Windows** - View what the LLM receives
-- 🧪 **Pipeline Steps** - Understand the RAG workflow
+Explore and understand exactly how your AI assistant works:
 
-**Debug Features:**
-- Query embedding visualization
-- Retrieval ranking explanation
-- Prompt token count
-- Response generation time
+#### **🔄 Complete Flow Visualization**
+Interactive 7-step pipeline showing the full execution path:
+1. 📝 User Query Input
+2. 🧠 Session Memory Check (retrieve last 3 turns)
+3. 🔍 Hybrid Search (Semantic + BM25 + Reranking)
+4. 📋 MCP Prompt Building (Memory + Context + Task + Schema)
+5. 🤖 LLM Generation (GPT-4o-mini with full context)
+6. 💾 Store in Session Memory (for next turn)
+7. ✅ Return Response to User
+
+**Visual representation with color-coded stages!**
+
+#### **👁️ LLM Prompt Inspector**
+See exactly what the LLM receives in its prompt:
+
+```
+================================================================================
+                         MEMORY SECTION 
+              (Relevant Past Conversations for Context)
+================================================================================
+
+## Recent Conversation History
+
+### Turn 1:
+**Customer Query:** How do I reactivate my suspended domain?
+**Your Previous Response:** To reactivate your domain, log into your portal...
+**Action Taken:** customer_action_required
+
+Use this conversation history to maintain continuity...
+
+================================================================================
+                          CONTEXT SECTION
+                (Retrieved from Knowledge Base via RAG)
+================================================================================
+
+### Document 1: Policy - Domain Suspension Guidelines
+**Similarity Score:** 95.00%
+Domains suspended for WHOIS verification failure can be reactivated...
+
+================================================================================
+                           TASK SECTION
+================================================================================
+
+Customer Ticket: "How long will that take?"
+
+[Analysis instructions...]
+```
+
+**Key Insights:**
+- ✅ Memory integration: See how past conversations influence responses
+- ✅ Context retrieval: View which documents were selected and why
+- ✅ Follow-up handling: Understand coreference resolution ("that" → "domain reactivation")
+- ✅ Real examples: Interactive scenarios with before/after prompts
+
+#### **🧠 Session Memory Inspector**
+Browse and manage conversation history:
+
+**Live Statistics:**
+- 💬 Total conversation turns (current / max 10)
+- 🔄 Context window (last 3 turns used in prompts)
+- ⏱️ Session duration and activity time
+- 📊 Memory capacity usage
+
+**Conversation History Viewer:**
+- View all stored turns with timestamps
+- Expandable Q&A pairs with full details
+- Action recommendations tracking
+- Reference citations for each turn
+- Clear memory button
+
+**How Memory Works - Detailed Explanation:**
+```
+┌────────────────────────────────────────────────────────────┐
+│ 📊 MEMORY FLOW SUMMARY:                                   │
+├────────────────────────────────────────────────────────────┤
+│                                                            │
+│  Previous turns  ───▶  MCP Prompt    ───▶  LLM receives  │
+│  in SessionMemory      MEMORY section      conversation   │
+│                                            history        │
+│       ▲                                          │        │
+│       │                                          │        │
+│       │              New turn stored             │        │
+│       └──────────────  for next query  ◀─────────┘        │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+```
+
+#### **🧪 Test Pipeline**
+Interactive testing interface:
+- Enter custom queries
+- See retrieved documents with similarity scores
+- Preview MCP prompt structure
+- Real-time analysis results
+- Document content preview
+
+#### **📊 MCP Structure Visualization**
+4-section prompt pattern explained:
+
+```
+┌────────────────┬────────────────┬────────────────┬────────────────┐
+│  🎭 ROLE      │  💭 MEMORY     │  📚 CONTEXT    │  📤 OUTPUT    │
+│  Expert        │  Last 3 turns  │  Retrieved     │  JSON schema   │
+│  assistant     │  (if any)      │  documents     │  specification │
+└────────────────┴────────────────┴────────────────┴────────────────┘
+```
+
+#### **🎯 Real-World Scenario Examples**
+
+**Scenario 1: Follow-up Question**
+```
+Previous: "How do I reactivate my suspended domain?"
+Follow-up: "How long will that take?"
+
+→ LLM sees MEMORY section with previous conversation
+→ Understands "that" = "domain reactivation"
+→ Finds timeline in retrieved docs
+→ Response: "24-48 hours after email verification"
+```
+
+**Scenario 2: Multi-turn Conversation**
+```
+Turn 1: "My domain was suspended"
+Turn 2: "What caused this?"
+Turn 3: "How do I fix it?"
+
+→ Each turn stored in session memory
+→ Last 3 turns included in next prompt
+→ Contextual, non-repetitive responses
+```
+
+**What You Can Learn:**
+- ✅ How hybrid search combines 3 methods
+- ✅ How memory enables follow-up questions
+- ✅ How MCP structures prompts
+- ✅ How the LLM makes decisions
+- ✅ How responses are validated and stored
+
+**Access Pipeline Explorer:**
+Open the Streamlit app → Navigate to **🔍 Pipeline Explorer** in the sidebar
 
 ### 📊 4. Analytics Dashboard
 
 **Monitor system performance:**
 
 - 📈 **Usage Metrics**
-  - Total documents indexed
+  - Total documents indexed (156+ base documents)
   - Tickets resolved count
   - Uploaded files tracking
+  - Memory usage statistics
 
 - ⚙️ **System Configuration**
   - LLM model (GPT-4o-mini)
@@ -492,8 +717,8 @@ System health and version info.
 
 - 🎯 **Performance Stats**
   - Average response time
-  - Search accuracy
-  - Memory usage
+  - Search accuracy metrics
+  - Session memory statistics
 
 ### ⚙️ 5. Settings Panel
 
@@ -507,7 +732,7 @@ System health and version info.
 - 🔍 **RAG Settings**
   - Top-K results (1-10)
   - Similarity threshold (0.0-1.0)
-  - Search mode (semantic/hybrid)
+  - Search mode configuration
 
 - 🔄 **System Actions**
   - Reset RAG pipeline
@@ -520,7 +745,7 @@ System health and version info.
 
 ### Comprehensive Test Suite
 
-**114+ tests** covering all components:
+**138 tests** covering all components:
 
 ```bash
 # Run all tests
@@ -540,21 +765,14 @@ pytest -vv
 
 | Component | Coverage | Tests |
 |-----------|----------|-------|
-| **RAG Pipeline** | ✅ 100% | Context retrieval, response generation, error handling |
+| **RAG Pipeline** | ✅ 100% | Context retrieval, response generation, memory integration, error handling |
 | **Vector Store** | ✅ 100% | FAISS operations, similarity search, persistence |
 | **Embeddings** | ✅ 100% | Text embedding, batch processing, similarity |
 | **Hybrid Search** | ✅ 98% | Semantic + BM25, reranking, score fusion |
-| **Memory System** | ✅ 95% | Short/long-term memory, feedback integration |
+| **Session Memory** | ✅ 95% | Conversation turns, context formatting, statistics ⭐ |
 | **API Endpoints** | ✅ 100% | Request validation, error responses, security |
-| **MCP Prompts** | ✅ 100% | Prompt structure, context injection, schemas |
-| **Document Processing** | ✅ 92% | Upload, chunking, indexing |
-
-**Code Quality:**
-- ✅ Type hints throughout
-- ✅ Docstrings for all public APIs
-- ✅ Error handling and logging
-- ✅ Input validation with Pydantic
-- ✅ Security best practices
+| **MCP Prompts** | ✅ 100% | Prompt structure, memory injection, context injection, schemas ⭐ |
+| **Document Processing** | ✅ 92% | Upload, semantic chunking, indexing |
 
 ---
 
@@ -562,57 +780,60 @@ pytest -vv
 
 ```
 ai-support-agent/
-├── 🎨 streamlit_app.py          # Beautiful Streamlit UI (1,560 lines)
+├── 🎨 streamlit_app.py          # Streamlit UI
 ├── 🐳 Dockerfile                 # Multi-stage production build
 ├── 🐳 docker-compose.yml         # Orchestration configuration
 ├── 📦 requirements.txt           # Python dependencies
 ├── 🔧 env.example                # Environment template
+├── 📖 ACCURATE_SYSTEM_FLOWCHART.md  # Detailed architecture (988 lines) 
 │
 ├── src/                          # Core application code
 │   ├── main.py                  # FastAPI application entry
-│   ├── config.py                # Settings & configuration
+│   ├── config.py                # Settings & configuration (Pydantic)
 │   │
 │   ├── 📡 api/                   # API endpoints
 │   │   ├── upload.py            # Document upload/management
 │   │   └── __init__.py
 │   │
 │   ├── 📊 models/                # Data models
-│   │   └── schemas.py           # Pydantic models (request/response)
+│   │   └── schemas.py           # Pydantic models (Document, TicketResponse)
 │   │
 │   ├── 🔧 services/              # Core business logic (3,097 lines)
-│   │   ├── rag.py               # 🧠 RAG pipeline orchestrator
+│   │   ├── rag.py               # 🧠 RAG pipeline orchestrator + memory
 │   │   ├── vector_store.py      # 🗄️ FAISS vector database
 │   │   ├── embedding.py         # 📊 Sentence Transformers
 │   │   ├── llm.py               # 🤖 OpenAI integration
 │   │   ├── hybrid_search.py     # 🔍 Semantic + BM25 + reranking
-│   │   ├── memory.py            # 💾 Conversation memory
+│   │   ├── simple_memory.py     # 💾 Session memory 
 │   │   ├── semantic_chunker.py  # 📄 Topic-aware chunking
 │   │   └── document_processor.py # 📤 File upload handler
 │   │
 │   ├── 📚 data/                  # Knowledge base
-│   │   └── knowledge_base.py    # Sample support docs
+│   │   └── knowledge_base.py    # 156 base support documents
 │   │
 │   └── 📝 prompts/               # Prompt engineering
-│       └── mcp_prompt.py        # MCP-compliant templates
+│       └── mcp_prompt.py        # MCP-compliant templates with memory 
 │
-├── tests/                        # 114+ unit tests
+├── tests/                        # 138 unit tests (11 test files)
 │   ├── conftest.py              # Pytest fixtures
 │   ├── test_rag.py              # RAG pipeline tests
 │   ├── test_vector_store.py     # Vector DB tests
 │   ├── test_embedding.py        # Embedding tests
 │   ├── test_hybrid_search.py    # Hybrid search tests
-│   ├── test_memory.py           # Memory system tests
+│   ├── test_simple_memory.py    # Session memory tests 
+│   ├── test_knowledge_base.py   # Knowledge base tests 
+│   ├── test_llm.py              # LLM service tests 
 │   ├── test_api.py              # API endpoint tests
 │   ├── test_prompts.py          # MCP prompt tests
 │   ├── test_semantic_chunker.py # Chunking tests
 │   └── test_document_processor.py # Upload tests
 │
 └── data/                         # Runtime data
-    ├── uploads/                 # Uploaded documents
+    ├── uploads/                 # User-uploaded documents
     └── vector_store/            # FAISS index persistence
+        ├── faiss.index          # Binary vector index
+        └── documents.pkl        # Document metadata
 ```
-
-**Total:** 4,657+ lines of production code + 1,200+ lines of tests = **5,857+ lines**
 
 ---
 
@@ -638,7 +859,7 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 
 **Available Models:**
 - `gpt-4o` - Most capable, best for complex queries
-- `gpt-4o-mini` - Fast, cost-effective (recommended)
+- `gpt-4o-mini` - Fast, cost-effective 
 - `gpt-4-turbo` - Balance of speed and capability
 - `gpt-3.5-turbo` - Fastest, lowest cost
 
@@ -651,15 +872,6 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 | `EMBEDDING_MODEL` | Sentence Transformer model | `all-MiniLM-L6-v2` |
 | `EMBEDDING_DIMENSION` | Vector dimension | `384` |
 
-#### Application Settings
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `APP_NAME` | Application name | `Knowledge Assistant` |
-| `APP_VERSION` | Version | `1.0.0` |
-| `DEBUG` | Debug mode | `false` |
-| `VECTOR_STORE_PATH` | Index persistence path | `./data/vector_store` |
-
 ---
 
 ## 🎓 How It Works
@@ -667,17 +879,27 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 ### 1. Document Indexing (One-Time Setup)
 
 ```
-📄 Documents
+📄 Documents (.txt, .md)
    ↓
-🔪 Semantic Chunking (topic-aware splitting)
+🔪 Semantic Chunking
+   • Sentence tokenization
+   • Embed each sentence (384-dim)
+   • Calculate adjacent similarity
+   • Find topic breakpoints (sim < threshold)
+   • Create chunks at boundaries
    ↓
-📊 Embedding (all-MiniLM-L6-v2 → 384-dim vectors)
+📊 Embedding (all-MiniLM-L6-v2)
+   • Each chunk → 384-dimensional vector
+   • Normalized for cosine similarity
    ↓
-🗄️ FAISS Vector Database (indexed for fast search)
+🗄️ FAISS Vector Database
+   • IndexFlatIP (Inner Product = Cosine)
+   • Fast similarity search
+   • Persisted to disk
 ```
 
 **Process:**
-1. Documents split at semantic boundaries (not arbitrary characters)
+1. Documents split at **semantic boundaries** (not arbitrary characters)
 2. Each chunk embedded using Sentence Transformers
 3. Vectors normalized and stored in FAISS index
 4. Metadata persisted for retrieval
@@ -686,27 +908,61 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 
 ```
 🎫 Customer Ticket
+   "My domain was suspended..."
+   ↓
+🧠 Check Session Memory 
+   • Is there conversation history?
+   • Retrieve last 3 turns if available
+   • Format as context string
    ↓
 📊 Query Embedding
+   • Convert query to 384-dim vector
    ↓
-🔍 Hybrid Search
-   ├─ Semantic (FAISS vector similarity)
-   ├─ Keyword (BM25 term matching)
-   └─ Reranking (Cross-encoder scoring)
+🔍 Hybrid Search (3-stage pipeline)
+   ├─ 1. Semantic Search (FAISS)
+   │     • Cosine similarity with query vector
+   │     • Returns top_k × 3 candidates
+   ├─ 2. Keyword Search (BM25)
+   │     • TF-IDF term matching
+   │     • Returns top_k × 3 candidates
+   └─ 3. Cross-Encoder Reranking
+         • Concatenate query + document
+         • Neural relevance scoring
+         • Final top_k selection
    ↓
-📚 Context Augmentation
-   ├─ Top-5 relevant documents
-   ├─ Conversation memory (if enabled)
-   └─ MCP prompt structure
+📚 Context Augmentation (MCP Prompt Builder)
+   ┌──────────────────────────────────────┐
+   │ 🎭 ROLE: Expert support assistant    │
+   ├──────────────────────────────────────┤
+   │ 💭 MEMORY: Last 3 conversation turns │ 
+   ├──────────────────────────────────────┤
+   │ 📚 CONTEXT: Top-5 relevant documents  │
+   ├──────────────────────────────────────┤
+   │ 📋 TASK: Customer query + instructions│
+   ├──────────────────────────────────────┤
+   │ 📤 OUTPUT: JSON schema specification  │
+   └──────────────────────────────────────┘
    ↓
-🤖 OpenAI GPT-4o (JSON mode)
+🤖 OpenAI GPT-4o-mini
+   • JSON mode (guaranteed valid JSON)
+   • Temperature: 0.3 (focused responses)
+   • Max tokens: 1024
    ↓
-✅ Structured Response (validated)
+✅ Structured Response
+   {
+     "answer": "...",
+     "references": [...],
+     "action_required": "..."
+   }
+   ↓
+💾 Store in Session Memory 
+   • Save Q&A pair with metadata
+   • Available for next query
 ```
 
-### 3. Model Context Protocol (MCP)
+### 3. Model Context Protocol (MCP) with Memory
 
-**Structured prompt engineering pattern with 4 sections:**
+**Structured prompt engineering pattern with 5 sections:**
 
 ```
 ╔═══════════════════════════════════════════════╗
@@ -716,18 +972,29 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 ║ • Expertise areas (domains, billing, DNS)    ║
 ║ • Response guidelines (clear, policy-based)  ║
 ╠═══════════════════════════════════════════════╣
+║ 💭 MEMORY (Conversation History)            ║
+║─────────────────────────────────────────────║
+║ ## Recent Conversation History               ║
+║ ### Turn 1:                                  ║
+║ **Customer Query:** Previous question...     ║
+║ **Your Response:** Previous answer...        ║
+║ **Action Taken:** customer_action_required   ║
+║                                              ║
+║ Use this history to maintain continuity...   ║
+╠═══════════════════════════════════════════════╣
 ║ 📚 CONTEXT (Retrieved from RAG)              ║
 ║─────────────────────────────────────────────║
-║ • Document 1: Policy Section 4.2 (95% match) ║
-║ • Document 2: FAQ Item (87% match)           ║
-║ • Document 3: Procedure Guide (82% match)    ║
-║ • [Optional] Past similar conversations      ║
+║ ### Document 1: Policy Section 4.2 (95%)    ║
+║ Domains suspended for WHOIS verification...  ║
+║                                              ║
+║ ### Document 2: FAQ Item (87%)               ║
+║ Reactivation process typically takes...      ║
 ╠═══════════════════════════════════════════════╣
 ║ 📋 TASK (Customer Query)                     ║
 ║─────────────────────────────────────────────║
-║ • The actual customer question               ║
-║ • Analysis instructions                      ║
-║ • Citation requirements                      ║
+║ Customer Ticket: "How long will that take?" ║
+║ → LLM understands "that" = domain reactivation║
+║   from MEMORY section above!                 ║
 ╠═══════════════════════════════════════════════╣
 ║ 📤 OUTPUT SCHEMA (JSON Format)               ║
 ║─────────────────────────────────────────────║
@@ -744,6 +1011,8 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 - ✅ **Grounding** - Responses based on actual docs
 - ✅ **Traceability** - Clear source attribution
 - ✅ **Parseable** - Structured JSON for automation
+- ✅ **Continuity** - Natural follow-up questions 
+- ✅ **Context-aware** - No repetition of information 
 
 ---
 
@@ -751,290 +1020,85 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 
 ### 🔍 Hybrid Search Engine
 
-**Combines 3 retrieval methods for 40% better accuracy:**
+**Combines 3 retrieval methods for better accuracy:**
 
 #### 1. Semantic Search (Vector Similarity)
-```python
-# Finds conceptually similar documents
-query_vector = embed("domain suspended")
-results = faiss_index.search(query_vector, top_k=10)
-# Matches: "domain deactivation", "account suspension", "service pause"
-```
 
 #### 2. Keyword Search (BM25)
-```python
-# Finds exact term matches
-bm25_scores = bm25.get_scores(query_tokens)
-# Matches: "domain" AND "suspended" (exact words)
-```
 
 #### 3. Cross-Encoder Reranking
-```python
-# Reorders results by query-document relevance
-pairs = [(query, doc) for doc in candidates]
-rerank_scores = cross_encoder.predict(pairs)
-# Final ranking: most relevant docs first
-```
 
 **Result:** Captures both **meaning** (semantic) and **specifics** (keywords), then refines with neural reranking.
 
-### 🧠 Conversation Memory System
+### 🧠 Session Memory System 
 
-**Two-tier memory for intelligent responses:**
+**Simple, reliable conversation memory optimized for Streamlit Cloud:**
 
-#### Short-Term Memory (Session Buffer)
-```python
-# Stores recent conversation in deque (configurable size)
-memory.add_interaction(query, response)
-# Last 10 exchanges kept in memory
-# Used for: context continuity, follow-up questions
+| Feature | Description |
+|---------|-------------|
+| **💬 Conversation Continuity** | Maintains context within a session to avoid repeating information |
+| **🔄 Auto-Context Injection** | Last 3 turns automatically included in prompts |
+| **📊 Live Statistics** | View total turns, session duration, memory usage |
+| **🗑️ Easy Clear** | Clear memory via UI button or automatic on session end |
+| **☁️ Cloud-Ready** | No file persistence - works perfectly on Streamlit Cloud |
+| **👁️ Full Visibility** | View complete conversation history in Pipeline Explorer |
+
+#### Memory Workflow
+
 ```
-
-#### Long-Term Memory (Vector Store)
-```python
-# Stores conversations as searchable vectors
-memory_id = hashlib.sha256(query.encode()).hexdigest()
-memory_doc = Document(
-    id=memory_id,
-    content=f"Q: {query}\nA: {response}",
-    category="conversation_memory",
-    timestamp=datetime.now()
-)
-vector_store.add_document(memory_doc)
-# Retrieved for: similar queries, feedback learning
+User Query: "How long will that take?"
+    ↓
+┌───────────────────────────────────────────────────────────┐
+│ 1. Check Session Memory                                  │
+│    → Found 1 previous turn                                │
+│    → Retrieve last 3 turns (or all if < 3)                │
+│    → Format as context string:                            │
+│                                                           │
+│    "## Recent Conversation History                       │
+│     ### Turn 1:                                          │
+│     **Customer Query:** How do I reactivate my domain?   │
+│     **Your Response:** Log into portal, update WHOIS...  │
+│     **Action Taken:** customer_action_required"          │
+└───────────────────────────────────────────────────────────┘
+    ↓
+┌───────────────────────────────────────────────────────────┐
+│ 2. Retrieve Documents via Hybrid Search                  │
+│    Query: "How long will that take?"                      │
+│    → Top-5 documents with "timeline", "duration", etc.   │
+└───────────────────────────────────────────────────────────┘
+    ↓
+┌───────────────────────────────────────────────────────────┐
+│ 3. Build MCP Prompt                                       │
+│    • ROLE: Expert support assistant                       │
+│    • MEMORY: Previous conversation about reactivation     │
+│    • CONTEXT: Retrieved docs with timelines               │
+│    • TASK: "How long will that take?"                     │
+│    • OUTPUT: JSON schema                                  │
+└───────────────────────────────────────────────────────────┘
+    ↓
+┌───────────────────────────────────────────────────────────┐
+│ 4. LLM Receives Full Context                              │
+│    → Understands "that" = "domain reactivation"           │
+│    → Finds "24-48 hours" in retrieved docs                │
+│    → Generates: "Domain reactivation typically takes      │
+│       24-48 hours after email verification."              │
+└───────────────────────────────────────────────────────────┘
+    ↓
+┌───────────────────────────────────────────────────────────┐
+│ 5. Store New Turn in Memory                               │
+│    SessionMemory.add_turn(                                │
+│        query="How long will that take?",                  │
+│        answer="Domain reactivation typically...",         │
+│        references=["Policy: Timeline Section 3.1"],       │
+│        action_required="customer_action_required"         │
+│    )                                                       │
+│    → Now 2 turns in memory, ready for next query          │
+└───────────────────────────────────────────────────────────┘
 ```
-
-**Features:**
-- Similar query detection (avoid duplicate answers)
-- Feedback integration (1-5 star ratings)
-- Relevance decay (older memories have less weight)
-- Privacy controls (clear session data)
-
-### 🧪 Semantic Chunking Algorithm
-
-**Topic-aware document splitting (not character-based):**
-
-```python
-# Traditional chunking (BAD)
-chunks = [text[i:i+500] for i in range(0, len(text), 500)]
-# Problem: Splits mid-sentence, breaks context
-
-# Semantic chunking (GOOD)
-1. Tokenize into sentences
-2. Embed each sentence
-3. Calculate similarity between adjacent sentences
-4. Find "breakpoints" (sim < threshold = topic change)
-5. Create chunks between breakpoints
-
-# Result: Coherent chunks that preserve meaning
-```
-
-**Benefits:**
-- ✅ Preserves complete thoughts
-- ✅ Respects topic boundaries
-- ✅ Better retrieval accuracy
-- ✅ More relevant context
-
-**Example:**
-```
-Input Document:
-"Domain registration requires WHOIS info. [Topic 1: Requirements]
-You must verify your email within 15 days.
-Failure to verify will result in suspension. [Topic 2: Consequences]
-Suspended domains can be reactivated..."
-
-Traditional Split (character-based):
-Chunk 1: "Domain registration requires WHOIS info. You must verify your email wi"
-Chunk 2: "thin 15 days. Failure to verify will result in suspension. Suspended d"
-❌ Broken sentences, lost context
-
-Semantic Split (topic-based):
-Chunk 1: "Domain registration requires WHOIS info. You must verify your email within 15 days."
-Chunk 2: "Failure to verify will result in suspension. Suspended domains can be reactivated..."
-✅ Complete thoughts, clear boundaries
-```
-
 ---
 
-## 🎯 Design Decisions & Why
-
-### Why FAISS Vector Database?
-
-**Chosen over Qdrant, Weaviate, Chroma, Pinecone**
-
-✅ **Advantages:**
-- **Lightning fast** - Optimized for billion-scale search (sub-millisecond queries)
-- **No dependencies** - No external database server required
-- **Battle-tested** - Used by Facebook, Spotify, Airbnb at massive scale
-- **Persistent** - Save/load index to disk
-- **Cost-effective** - No ongoing fees
-
-❌ **What we gave up:**
-- Cloud-hosted options (acceptable for self-hosted)
-- Built-in filtering (we implement in post-processing)
-- Real-time updates (acceptable with batch reindexing)
-
-**Verdict:** Perfect balance of performance, simplicity, and cost for this use case.
-
-### Why Hybrid Search?
-
-**Research-backed approach from RAG best practices:**
-
-| Method | Strengths | Weaknesses |
-|--------|-----------|------------|
-| **Semantic Only** | Understands meaning, handles synonyms | Misses exact keyword matches |
-| **Keyword Only (BM25)** | Finds exact terms, fast | Misses conceptual similarity |
-| **Hybrid (Both)** | Best of both worlds | Slightly more complex |
-
-**Real example:**
-```
-Query: "How do I renew my expiring domain?"
-
-Semantic finds:
-- "Domain renewal process" ✅
-- "Extending domain registration" ✅
-- "Purchasing additional years" ✅
-
-Keyword finds:
-- "renew" + "domain" (exact match) ✅
-- "expiring" + "domain" (exact match) ✅
-
-Hybrid finds: All of the above ✅✅✅
-```
-
-**Result:** 40% improvement in retrieval accuracy (measured via test queries).
-
-### Why Semantic Chunking?
-
-**Traditional character-based chunking breaks context:**
-
-```python
-# Bad: Character-based (500 chars)
-"...domains are suspended for WHOIS issues. To reactivate, log into your accou"
-"nt and update your contact information. Verification takes 24-48 hours..."
-# ❌ Breaks mid-sentence, loses context
-
-# Good: Semantic chunking (topic boundaries)
-"...domains are suspended for WHOIS issues."
-"To reactivate, log into your account and update your contact information. Verification takes 24-48 hours..."
-# ✅ Complete thoughts, preserved context
-```
-
-**Research shows:** Semantic chunking improves retrieval relevance by 25-30%.
-
-### Why OpenAI GPT-4o-mini?
-
-**Optimal balance of quality, speed, and cost:**
-
-| Model | Speed | Quality | Cost | Best For |
-|-------|-------|---------|------|----------|
-| GPT-4o | ⭐⭐ | ⭐⭐⭐⭐⭐ | $$$$ | Complex reasoning |
-| GPT-4o-mini | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | $$ | **Support tickets** ✅ |
-| GPT-3.5-turbo | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | $ | Simple queries |
-
-**For support tickets:**
-- ✅ Accurate enough (RAG provides context)
-- ✅ Fast responses (< 2 seconds)
-- ✅ Cost-effective ($0.15 per 1M input tokens)
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please feel free to submit a Pull Request.
-
-**How to contribute:**
-
-1. **Fork** this repository
-2. **Create** your feature branch
-   ```bash
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Commit** your changes
-   ```bash
-   git commit -m 'Add some AmazingFeature'
-   ```
-4. **Push** to the branch
-   ```bash
-   git push origin feature/AmazingFeature
-   ```
-5. **Open** a Pull Request
-
-**Areas we'd love help with:**
-- Additional embedding models support
-- More search algorithms (ColBERT, etc.)
-- UI/UX improvements
-- Additional deployment guides
-- Performance optimizations
-- Documentation improvements
-
----
-
-## 📝 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-**Free to:**
-- ✅ Use commercially
-- ✅ Modify
-- ✅ Distribute
-- ✅ Sublicense
-
-**Just:**
-- ✅ Include original license
-- ✅ State changes made
-
----
-
-## 🙏 Acknowledgments
-
-**Built with amazing open-source technologies:**
-
-- [OpenAI](https://openai.com/) - GPT models for natural language understanding
-- [FAISS](https://faiss.ai/) by Facebook AI - Lightning-fast vector similarity search
-- [Sentence Transformers](https://www.sbert.net/) - State-of-the-art text embeddings
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern, fast web framework
-- [Streamlit](https://streamlit.io/) - Beautiful data apps in minutes
-- [Pydantic](https://pydantic.dev/) - Data validation with type hints
-- [Docker](https://www.docker.com/) - Containerization platform
-
-**Inspired by research from:**
-- RAG optimization papers (LangChain, LlamaIndex)
-- Hybrid search techniques (Pinecone, Weaviate)
-- Semantic chunking strategies (RecursiveCharacterTextSplitter alternatives)
-
----
-
-## 📧 Contact & Support
+## 📧 Contact
 
 **👤 Author:** Kaxit Pandya
-**🔗 GitHub:** [@KaxitPandya](https://github.com/KaxitPandya)
-**🌐 Project:** [ai-support-agent](https://github.com/KaxitPandya/ai-support-agent)
-**🚀 Live Demo:** [Streamlit Cloud](https://ai-support-agent1.streamlit.app/)
-
-**Need help?**
-- 🐛 [Report a bug](https://github.com/KaxitPandya/ai-support-agent/issues)
-- 💡 [Request a feature](https://github.com/KaxitPandya/ai-support-agent/issues)
-- 📖 [Read the docs](#-table-of-contents)
-- 💬 [Start a discussion](https://github.com/KaxitPandya/ai-support-agent/discussions)
-
----
-
-<div align="center">
-
-## ⭐ Star this repo if you find it helpful!
-
-**Built with ❤️ using OpenAI GPT-4o, FAISS, FastAPI, and Streamlit**
-
-[🚀 Try Live Demo](https://ai-support-agent1.streamlit.app/) | [📚 Read Docs](#-table-of-contents) | [🐳 Deploy Now](#-quick-start)
-
----
-
-### 🎯 Perfect for:
-**Enterprise Support Teams** · **SaaS Companies** · **Customer Success** · **Technical Documentation** · **AI Engineers**
-
----
-
-**© 2024 Kaxit Pandya. Released under MIT License.**
-
-</div>
+**🔗 LinkedIn:** [linkedin.com/in/kaxit-pandya-aba866200](https://www.linkedin.com/in/kaxit-pandya-aba866200)
+**🚀 Live Demo:** [ai-support-agent1.streamlit.app](https://ai-support-agent1.streamlit.app/)
