@@ -8,7 +8,7 @@
 
 > **Watch the AI Support Agent in action:**
 
-[![AI Support Agent Demo](https://img.shields.io/badge/▶️_Watch_Demo-Video-FF0000?style=for-the-badge&logo=youtube)](https://drive.google.com/file/d/14DtapDs1uB-46k5hDQ6epV6S8CQqKqTK/view?usp=sharing)
+**[▶️ Watch Demo Video](https://drive.google.com/file/d/14DtapDs1uB-46k5hDQ6epV6S8CQqKqTK/view?usp=sharing)**
 
 ### ✨ **Free & Easy to Use**
 
