@@ -202,6 +202,56 @@ class TestFAISSVectorStore:
         # Should initialize empty
         assert store.get_document_count() == 0
 
+    def test_remove_documents_by_source(self):
+        """Test removing documents by source filename."""
+        # Create documents that simulate uploaded file chunks
+        docs = [
+            Document(id="file1.txt-chunk-0", title="File 1", content="Content 1a", category="Test"),
+            Document(id="file1.txt-chunk-1", title="File 1", content="Content 1b", category="Test"),
+            Document(id="file2.txt-chunk-0", title="File 2", content="Content 2a", category="Test"),
+            Document(id="file2.txt-chunk-1", title="File 2", content="Content 2b", category="Test"),
+            Document(id="base-doc", title="Base Doc", content="Base content", category="Test"),
+        ]
+
+        store = FAISSVectorStore()
+        store.add_documents(docs)
+        assert store.get_document_count() == 5
+
+        # Remove documents from file1.txt
+        removed = store.remove_documents_by_source("file1.txt")
+
+        assert removed == 2
+        assert store.get_document_count() == 3
+
+        # Verify correct documents remain
+        remaining_ids = {doc.id for doc in store.documents}
+        assert "file2.txt-chunk-0" in remaining_ids
+        assert "file2.txt-chunk-1" in remaining_ids
+        assert "base-doc" in remaining_ids
+        assert "file1.txt-chunk-0" not in remaining_ids
+
+    def test_remove_documents_by_source_not_found(self):
+        """Test removing documents when source doesn't exist."""
+        docs = [
+            Document(id="doc-1", title="Doc 1", content="Content 1", category="Test"),
+        ]
+
+        store = FAISSVectorStore()
+        store.add_documents(docs)
+
+        removed = store.remove_documents_by_source("nonexistent.txt")
+
+        assert removed == 0
+        assert store.get_document_count() == 1
+
+    def test_remove_documents_by_source_empty_store(self):
+        """Test removing documents from empty store."""
+        store = FAISSVectorStore()
+
+        removed = store.remove_documents_by_source("file.txt")
+
+        assert removed == 0
+
 
 class TestVectorStoreSingleton:
     """Tests for vector store singleton functions."""
