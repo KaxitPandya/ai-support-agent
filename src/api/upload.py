@@ -121,6 +121,8 @@ async def upload_document(
         # Index if requested
         if index_immediately and documents:
             vector_store = get_vector_store()
+            # Remove existing chunks from this file first (prevent duplicates)
+            vector_store.remove_documents_by_source(file.filename)
             vector_store.add_documents(documents)
         
         return UploadResponse(
@@ -155,20 +157,24 @@ async def list_files():
 async def delete_file(filename: str):
     """
     Delete an uploaded document.
-    
-    Note: This removes the file from disk. The document chunks
-    may still exist in the vector index until reindexing.
-    
+
+    This removes the file from disk AND removes all associated
+    document chunks from the vector index.
+
     Args:
         filename: Name of the file to delete.
     """
     processor = get_document_processor()
-    
+
     if processor.delete_file(filename):
+        # Also remove document chunks from vector store
+        vector_store = get_vector_store()
+        removed_count = vector_store.remove_documents_by_source(filename)
+
         return DeleteResponse(
             success=True,
             filename=filename,
-            message="File deleted successfully"
+            message=f"File deleted successfully ({removed_count} chunks removed from index)"
         )
     else:
         raise HTTPException(status_code=404, detail=f"File not found: {filename}")
