@@ -24,18 +24,18 @@
 
 ## 📑 Table of Contents
 
-- [🎯 What Makes This Special?](#what-makes-this-special)
-- [✨ Core Features](#core-features)
-- [🏗️ Complete System Architecture](#complete-system-architecture)
-- [🚀 Quick Start](#quick-start)
-- [📖 API Reference](#api-reference)
-- [🎨 Features Deep Dive](#features-deep-dive)
-- [🧪 Testing & Quality](#testing--quality)
-- [📁 Project Structure](#project-structure)
-- [⚙️ Configuration](#configuration)
-- [🎓 How It Works](#how-it-works)
-- [🚀 Advanced Features](#advanced-features-deep-dive)
-- [📧 Contact](#contact)
+- [🎯 What Makes This Special?](#-what-makes-this-special)
+- [✨ Core Features](#-core-features)
+- [🏗️ Complete System Architecture](#️-complete-system-architecture)
+- [🚀 Quick Start](#quick-start-section)
+- [📖 API Reference](#-api-reference)
+- [🎨 Features Deep Dive](#-features-deep-dive)
+- [🧪 Testing & Quality](#-testing--quality)
+- [📁 Project Structure](#-project-structure)
+- [⚙️ Configuration](#️-configuration)
+- [🎓 How It Works](#-how-it-works)
+- [🚀 Advanced Features](#-advanced-features-deep-dive)
+- [📧 Contact](#-contact)
 
 ---
 
@@ -155,7 +155,7 @@ graph TB
     subgraph "Pipeline 2: Ticket Resolution with Memory"
         TICKET[🎫 Customer Ticket Query]
 
-        subgraph "Memory System ⭐"
+        subgraph "Memory System "
             MEM_CHECK{🧠 Check Memory?}
             SESSION_MEM[💬 Session Memory<br/>Last 10 turns<br/>Context window: 3]
             MEM_CONTEXT[📋 Memory Context<br/>Last 3 conversations]
@@ -176,7 +176,7 @@ graph TB
         subgraph "MCP Prompt Building"
             MCP_BUILDER[📋 MCP Prompt Builder]
             ROLE[🎭 ROLE Section]
-            MEM_SEC[💭 MEMORY Section<br/>Past 3 turns ⭐]
+            MEM_SEC[💭 MEMORY Section<br/>Past 3 turns ]
             CTX_SEC[📚 CONTEXT Section<br/>Retrieved documents]
             TASK_SEC[📝 TASK Section<br/>Customer query]
             SCHEMA_SEC[📤 OUTPUT SCHEMA]
@@ -239,7 +239,7 @@ graph TB
 
     %% MCP Prompt Building
     TOP_K -->|Retrieved docs + scores| MCP_BUILDER
-    MEM_CONTEXT -->|Conversation history ⭐| MCP_BUILDER
+    MEM_CONTEXT -->|Conversation history | MCP_BUILDER
     MCP_BUILDER --> ROLE
     ROLE --> MEM_SEC
     MEM_SEC -->|Injects memory| CTX_SEC
@@ -255,7 +255,7 @@ graph TB
     %% Response handling
     JSON_PARSE --> RESPONSE
     RESPONSE --> ACTIONS
-    ACTIONS -->|Store Q&A for next turn ⭐| SESSION_MEM
+    ACTIONS -->|Store Q&A for next turn | SESSION_MEM
 
     %% Return to user
     RESPONSE --> STREAMLIT
@@ -361,6 +361,7 @@ graph TB
 
 ---
 
+<div id="quick-start-section"></div>
 
 ## 🚀 Quick Start
 
@@ -774,9 +775,9 @@ pytest -vv
 | **Vector Store** | ✅ 100% | FAISS operations, similarity search, persistence |
 | **Embeddings** | ✅ 100% | Text embedding, batch processing, similarity |
 | **Hybrid Search** | ✅ 98% | Semantic + BM25, reranking, score fusion |
-| **Session Memory** | ✅ 95% | Conversation turns, context formatting, statistics ⭐ |
+| **Session Memory** | ✅ 95% | Conversation turns, context formatting, statistics  |
 | **API Endpoints** | ✅ 100% | Request validation, error responses, security |
-| **MCP Prompts** | ✅ 100% | Prompt structure, memory injection, context injection, schemas ⭐ |
+| **MCP Prompts** | ✅ 100% | Prompt structure, memory injection, context injection, schemas  |
 | **Document Processing** | ✅ 92% | Upload, semantic chunking, indexing |
 
 ---
