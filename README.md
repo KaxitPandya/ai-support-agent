@@ -1,7 +1,5 @@
 # 🧠 AI Support Agent - Enterprise RAG Knowledge Assistant
 
-> **AI Coding Challenge Submission** - Advanced RAG system for support team knowledge assistance
-
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Streamlit_Cloud-FF4B4B?style=for-the-badge)](https://ai-support-agent1.streamlit.app/)
 [![Tests](https://img.shields.io/badge/Tests-138_Passing-brightgreen?style=for-the-badge)](tests/)
 
@@ -26,18 +24,18 @@
 
 ## 📑 Table of Contents
 
-- [🎯 What Makes This Special?](#-what-makes-this-special)
-- [✨ Core Features](#-core-features)
-- [🏗️ Complete System Architecture](#️-complete-system-architecture)
-- [🚀 Quick Start](#-quick-start)
-- [📖 API Reference](#-api-reference)
-- [🎨 Features Deep Dive](#-features-deep-dive)
-- [🧪 Testing & Quality](#-testing--quality)
-- [📁 Project Structure](#-project-structure)
-- [⚙️ Configuration](#️-configuration)
-- [🎓 How It Works](#-how-it-works)
-- [🚀 Advanced Features](#-advanced-features-deep-dive)
-- [📧 Contact](#-contact)
+- [🎯 What Makes This Special?](#what-makes-this-special)
+- [✨ Core Features](#core-features)
+- [🏗️ Complete System Architecture](#complete-system-architecture)
+- [🚀 Quick Start](#quick-start)
+- [📖 API Reference](#api-reference)
+- [🎨 Features Deep Dive](#features-deep-dive)
+- [🧪 Testing & Quality](#testing--quality)
+- [📁 Project Structure](#project-structure)
+- [⚙️ Configuration](#configuration)
+- [🎓 How It Works](#how-it-works)
+- [🚀 Advanced Features](#advanced-features-deep-dive)
+- [📧 Contact](#contact)
 
 ---
 
@@ -72,32 +70,31 @@ Transform raw customer queries into accurate, policy-compliant responses **insta
 
 <table>
 <tr>
-<td width="50%">
+<td width="33%">
 
 ### 🔍 **Advanced Retrieval**
-- **Hybrid Search** - Combines semantic (FAISS) + keyword (BM25) + cross-encoder reranking for 40% better relevance
-- **Semantic Chunking** - Topic-aware document splitting using embeddings, not arbitrary character limits
-- **Context-Aware** - Retrieves most relevant documentation sections automatically
+- **Hybrid Search** - Semantic (FAISS) + BM25 + reranking for better relevance
+- **Semantic Chunking** - Topic-aware splitting using cosine similarity
+- **Context-Aware** - Auto-retrieves relevant docs
 
 </td>
-<td width="50%">
+<td width="33%">
 
 ### 🧠 **Intelligence & Memory**
-- **Session Memory** - In-memory conversation history (last 10 turns)
-- **Context Window** - Last 3 turns included in LLM prompts
-- **Follow-up Support** - Natural conversation flow with coreference resolution
-- **Cloud-Ready** - Perfect for Streamlit Cloud deployment
+- **Session Memory** - Last 10 turns stored
+- **Context Window** - Last 3 turns in prompts
+- **Follow-up Support** - Natural conversation flow
+
 
 </td>
-
-<td>
+<td width="33%">
 
 ### ⚡ **Developer Experience**
-- **FastAPI Backend** - Async REST API with OpenAPI docs
+- **FastAPI Backend** - Async REST + OpenAPI
 - **Docker-Ready** - One command deployment
-- **138 Unit Tests** - Comprehensive test coverage
-- **Type-Safe** - Full type hints with Pydantic
-- **Production-Ready** - Error handling, logging, monitoring
+- **138 Unit Tests** - Full coverage
+- **Type-Safe** - Pydantic validation
+- **Production-Ready** - Error handling & monitoring
 
 </td>
 </tr>
@@ -266,6 +263,15 @@ graph TB
     FASTAPI --> USER
     STREAMLIT --> USER
 
+    %% Interactive click handlers
+    click STREAMLIT "https://ai-support-agent1.streamlit.app/" "Open Live Demo"
+    click FASTAPI "#-api-reference" "View API Documentation"
+    click FAISS "https://github.com/facebookresearch/faiss" "Learn about FAISS"
+    click GPT "https://platform.openai.com/docs/models" "OpenAI Models"
+    click SESSION_MEM "#-session-memory-system" "Memory System Details"
+    click MCP_BUILDER "#-model-context-protocol-mcp" "MCP Documentation"
+    click HYBRID_SVC "#-hybrid-search-engine" "Hybrid Search Details"
+
     %% Styling
     classDef uiLayer fill:#2F59A3,stroke:#254A8D,stroke-width:3px,color:#fff
     classDef docLayer fill:#28A745,stroke:#1e7e34,stroke-width:2px,color:#fff
@@ -355,6 +361,7 @@ graph TB
 
 ---
 
+
 ## 🚀 Quick Start
 
 ### Option 1: Live Demo (Instant Access)
@@ -428,12 +435,15 @@ Generate AI-powered response for a customer query.
 ```
 
 **Action Types:**
-- `none` - Ticket resolved
-- `escalate_to_abuse_team` - Security/policy violation
-- `escalate_to_billing` - Payment/refund issue
-- `escalate_to_technical` - Complex technical issue
-- `customer_action_required` - Awaiting customer action
-- `follow_up_required` - Needs follow-up
+
+| Type | Description |
+|------|-------------|
+| `none` | Ticket resolved |
+| `escalate_to_abuse_team` | Security/policy violation |
+| `escalate_to_billing` | Payment/refund issue |
+| `escalate_to_technical` | Complex technical issue |
+| `customer_action_required` | Awaiting customer action |
+| `follow_up_required` | Needs follow-up |
 
 #### 📤 Upload Document
 **`POST /api/documents/upload`**
@@ -530,12 +540,7 @@ System health and version info.
 - 📤 **MCP JSON Output** - Inspect structured response format
 - 💾 **Conversation History** - Review past ticket resolutions
 
-**Key Features:**
-- Real-time streaming responses
-- Relevance scoring (0-100%)
-- Source document citations
-- Action recommendations
-- Copy/export responses
+**Key Features:** Real-time streaming • Relevance scoring (0-100%) • Source citations • Action recommendations • Copy/export
 
 ### 📚 2. Knowledge Base Management
 
@@ -858,10 +863,7 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 | `OPENAI_MAX_TOKENS` | Max response length | `1024` |
 
 **Available Models:**
-- `gpt-4o` - Most capable, best for complex queries
-- `gpt-4o-mini` - Fast, cost-effective 
-- `gpt-4-turbo` - Balance of speed and capability
-- `gpt-3.5-turbo` - Fastest, lowest cost
+
 
 #### RAG Configuration
 
