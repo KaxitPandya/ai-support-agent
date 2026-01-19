@@ -28,7 +28,6 @@
 - ✅ **Full Features** - Complete RAG pipeline with Memory, Hybrid Search, and MCP
 
 ---
----
 
 **Features:**
 - 🌐 **Hosted Streamlit Website**
