@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     
     # Vector Store Settings
     vector_store_path: str = "./data/vector_store"
+    memory_store_path: str = "./data/memory_store"
 
 
 @lru_cache

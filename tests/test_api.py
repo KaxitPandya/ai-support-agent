@@ -129,9 +129,26 @@ class TestAPI:
         assert response.status_code == 200
 
 
+    def test_resolve_ticket_error_handling(self):
+        """Test that exceptions in pipeline are caught and return 500."""
+        mock_pipeline = MagicMock()
+        mock_pipeline.resolve_ticket.side_effect = Exception("Pipeline error")
+
+        with patch('src.main.get_rag_pipeline', return_value=mock_pipeline):
+            with patch('src.main.initialize_rag_pipeline'):
+                from src.main import app
+                client = TestClient(app)
+
+                request_data = {"ticket_text": "Test ticket"}
+                response = client.post("/resolve-ticket", json=request_data)
+
+                assert response.status_code == 500
+                assert "error" in response.json()["detail"].lower()
+
+
 class TestAPIValidation:
     """Tests for API input validation."""
-    
+
     @pytest.fixture
     def client(self):
         """Create a test client with mocked pipeline."""
@@ -141,12 +158,12 @@ class TestAPIValidation:
             references=[],
             action_required="none"
         )
-        
+
         with patch('src.main.get_rag_pipeline', return_value=mock):
             with patch('src.main.initialize_rag_pipeline', return_value=mock):
                 from src.main import app
                 yield TestClient(app)
-    
+
     def test_invalid_json(self, client):
         """Test that invalid JSON returns error."""
         response = client.post(
@@ -154,9 +171,9 @@ class TestAPIValidation:
             content="not valid json",
             headers={"Content-Type": "application/json"}
         )
-        
+
         assert response.status_code == 422
-    
+
     def test_wrong_content_type(self, client):
         """Test that wrong content type is handled."""
         response = client.post(
@@ -164,5 +181,18 @@ class TestAPIValidation:
             data="ticket_text=test",
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
-        
+
         assert response.status_code == 422
+
+
+class TestLifespan:
+    """Tests for application lifespan events."""
+
+    def test_lifespan_startup_success(self):
+        """Test successful lifespan startup."""
+        with patch('src.main.initialize_rag_pipeline'):
+            from src.main import app
+            # Creating TestClient triggers lifespan events
+            client = TestClient(app)
+            assert client is not None
+

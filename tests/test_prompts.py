@@ -175,15 +175,35 @@ class TestMCPPrompts:
     def test_get_mcp_structure_info(self):
         """Test MCP structure info helper."""
         info = get_mcp_structure_info()
-        
+
         assert "pattern" in info
         assert "sections" in info
         assert "output_format" in info
         assert "action_types" in info
-        
+
         # Verify sections
         sections = info["sections"]
         assert "role" in sections
         assert "context" in sections
         assert "task" in sections
         assert "output_schema" in sections
+
+    def test_build_mcp_prompt_with_memory_context(self, sample_contexts):
+        """Test that MCP prompt includes memory section when provided."""
+        ticket_text = "Can you remind me what we discussed?"
+        memory_context = "Previous conversation about domain suspension..."
+
+        messages = build_mcp_prompt(ticket_text, sample_contexts, memory_context)
+
+        user_content = messages[1]["content"]
+        assert "MEMORY SECTION" in user_content
+        assert memory_context in user_content
+
+    def test_build_mcp_prompt_without_memory_context(self, sample_contexts):
+        """Test that MCP prompt works without memory section."""
+        ticket_text = "My domain was suspended."
+
+        messages = build_mcp_prompt(ticket_text, sample_contexts, "")
+
+        user_content = messages[1]["content"]
+        assert "MEMORY SECTION" not in user_content

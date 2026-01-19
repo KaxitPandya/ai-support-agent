@@ -96,31 +96,18 @@ class DocumentProcessor:
             )
         return self._semantic_chunker
     
-    def chunk_text(
-        self,
-        text: str,
-        chunk_size: int | None = None,
-        overlap: int | None = None,
-        strategy: Literal["semantic", "simple"] | None = None
-    ) -> List[str]:
+    def chunk_text(self, text: str) -> List[str]:
         """
-        Split text into chunks using the configured strategy.
-        
+        Split text into chunks using semantic chunking.
+
         Args:
             text: The text to chunk.
-            chunk_size: Max characters per chunk (simple mode).
-            overlap: Overlap between chunks.
-            strategy: Override default strategy ("semantic" or "simple").
-            
+
         Returns:
-            List of text chunks.
+            List of semantically coherent chunks.
         """
-        strategy = strategy or self.chunk_strategy
-        
-        if strategy == "semantic":
-            return self._semantic_chunk(text)
-        else:
-            return self._simple_chunk(text, chunk_size, overlap)
+        # Always use semantic chunking for better quality
+        return self._semantic_chunk(text)
     
     def _semantic_chunk(self, text: str) -> List[str]:
         """

@@ -2,10 +2,20 @@
 Unit tests for the FAISS vector database service.
 """
 
+import os
+import tempfile
+from pathlib import Path
+
 import pytest
 
 from src.models.schemas import Document
-from src.services.vector_store import FAISSVectorStore, VectorStore
+from src.services.vector_store import (
+    FAISSVectorStore,
+    VectorStore,
+    initialize_vector_store,
+    get_vector_store
+)
+from src.services import vector_store as vector_store_module
 
 
 class TestFAISSVectorStore:
@@ -149,3 +159,156 @@ class TestFAISSVectorStore:
         # VectorStore should be an alias for FAISSVectorStore
         store = VectorStore()
         assert isinstance(store, FAISSVectorStore)
+
+    def test_save_and_load(self, sample_documents):
+        """Test saving and loading vector store."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create and populate store
+            store1 = FAISSVectorStore()
+            store1.add_documents(sample_documents)
+
+            # Save to disk
+            store1.save(tmpdir)
+
+            # Verify files were created
+            assert os.path.exists(os.path.join(tmpdir, "faiss.index"))
+            assert os.path.exists(os.path.join(tmpdir, "documents.pkl"))
+
+            # Load in new store
+            store2 = FAISSVectorStore()
+            store2.load(tmpdir)
+
+            # Verify loaded store has same documents
+            assert store2.get_document_count() == len(sample_documents)
+            assert len(store2.documents) == len(sample_documents)
+
+    def test_load_at_init(self, sample_documents):
+        """Test loading existing index at initialization."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create and save store
+            store1 = FAISSVectorStore()
+            store1.add_documents(sample_documents)
+            store1.save(tmpdir)
+
+            # Create new store with index_path
+            store2 = FAISSVectorStore(index_path=tmpdir)
+
+            # Should have loaded documents
+            assert store2.get_document_count() == len(sample_documents)
+
+    def test_load_nonexistent_path(self):
+        """Test loading from nonexistent path doesn't crash."""
+        store = FAISSVectorStore(index_path="/nonexistent/path")
+        # Should initialize empty
+        assert store.get_document_count() == 0
+
+
+class TestVectorStoreSingleton:
+    """Tests for vector store singleton functions."""
+
+    @pytest.fixture
+    def sample_documents(self):
+        """Create sample documents for testing."""
+        return [
+            Document(
+                id="test-1",
+                title="Test Doc 1",
+                content="Test content 1",
+                category="Test"
+            ),
+            Document(
+                id="test-2",
+                title="Test Doc 2",
+                content="Test content 2",
+                category="Test"
+            ),
+        ]
+
+    def test_initialize_vector_store(self, sample_documents):
+        """Test initializing vector store singleton."""
+        # Reset singleton
+        vector_store_module._vector_store = None
+
+        store = initialize_vector_store(sample_documents)
+
+        assert store is not None
+        assert store.get_document_count() == len(sample_documents)
+
+    def test_initialize_vector_store_idempotent(self, sample_documents):
+        """Test that initialize_vector_store doesn't re-add existing docs."""
+        # Reset singleton
+        vector_store_module._vector_store = None
+
+        store1 = initialize_vector_store(sample_documents)
+        initial_count = store1.get_document_count()
+
+        # Initialize again
+        store2 = initialize_vector_store(sample_documents)
+
+        # Should be same instance and same count
+        assert store1 is store2
+        assert store2.get_document_count() == initial_count
+
+    def test_initialize_vector_store_force_reinit(self, sample_documents):
+        """Test force reinitialization clears existing docs."""
+        # Reset singleton
+        vector_store_module._vector_store = None
+
+        # Add some docs
+        store1 = initialize_vector_store(sample_documents)
+
+        # Add more docs manually
+        extra_doc = Document(
+            id="extra",
+            title="Extra",
+            content="Extra document",
+            category="Test"
+        )
+        store1.add_documents([extra_doc])
+        count_with_extra = store1.get_document_count()
+
+        # Force reinit should clear and only add base docs
+        store2 = initialize_vector_store(sample_documents, force_reinit=True)
+
+        assert store1 is store2
+        assert store2.get_document_count() == len(sample_documents)
+        assert store2.get_document_count() < count_with_extra
+
+    def test_get_vector_store(self, sample_documents):
+        """Test getting vector store singleton."""
+        # Reset singleton
+        vector_store_module._vector_store = None
+
+        # Initialize first
+        initialize_vector_store(sample_documents)
+
+        # Get should return same instance
+        store1 = get_vector_store()
+        store2 = get_vector_store()
+
+        assert store1 is store2
+
+    def test_initialize_adds_new_docs_only(self, sample_documents):
+        """Test that reinitializing only adds new base documents."""
+        # Reset singleton
+        vector_store_module._vector_store = None
+
+        # Initialize with 2 docs
+        store1 = initialize_vector_store(sample_documents)
+        assert store1.get_document_count() == 2
+
+        # Add a third doc that's NOT in base
+        extra_doc = Document(
+            id="extra-new",
+            title="Extra New",
+            content="New extra content",
+            category="Extra"
+        )
+        store1.add_documents([extra_doc])
+        assert store1.get_document_count() == 3
+
+        # Reinitialize with same base docs - should preserve extra doc
+        store2 = initialize_vector_store(sample_documents)
+
+        assert store1 is store2
+        assert store2.get_document_count() == 3  # Base 2 + extra 1

@@ -84,11 +84,10 @@ class RAGPipeline:
     def _get_memory(self):
         """Lazy load memory service."""
         if self._memory is None and self.use_memory:
-            from src.services.memory import HybridMemory
-            self._memory = HybridMemory(
-                short_term_turns=10,
-                long_term_decay=0.1,
-                similarity_threshold=0.75
+            from src.services.simple_memory import SessionMemory
+            self._memory = SessionMemory(
+                max_turns=10,
+                context_window=3
             )
         return self._memory
     
@@ -195,29 +194,19 @@ class RAGPipeline:
         
         logger.info(f"Processing ticket: {ticket_text[:100]}...")
         
-        # Step 1: Check for similar previous query (for consistency)
+        # Step 1: Get memory (if enabled)
         memory = self._get_memory() if self.use_memory else None
-        similar_query = None
-        
-        if memory and include_memory_context:
-            similar_query = memory.check_similar_query(ticket_text)
-            if similar_query:
-                logger.info(f"Found similar previous query: {similar_query.query[:50]}...")
-        
-        # Step 2: Retrieve relevant context
+
+        # Step 2: Retrieve relevant context from knowledge base
         contexts = self.retrieve_context(ticket_text)
         logger.info(f"Retrieved {len(contexts)} relevant documents")
-        
+
         # Step 3: Build MCP prompt with optional memory context
         memory_context = ""
-        if memory and include_memory_context:
-            memory_context = memory.get_relevant_context(
-                ticket_text,
-                include_short_term=True,
-                include_long_term=True,
-                max_long_term=2
-            )
-        
+        if memory and include_memory_context and not memory.is_empty():
+            memory_context = memory.get_context_for_prompt()
+            logger.info(f"Including {len(memory.turns)} recent conversations in context")
+
         messages = build_mcp_prompt(ticket_text, contexts, memory_context)
         
         # Step 4: Generate response
@@ -237,8 +226,13 @@ class RAGPipeline:
         
         # Step 6: Store in memory for learning
         if memory and store_in_memory:
-            memory.add_interaction(ticket_text, response, store_long_term=True)
-            logger.info("Interaction stored in memory")
+            memory.add_turn(
+                query=ticket_text,
+                answer=response.answer,
+                references=response.references,
+                action_required=response.action_required
+            )
+            logger.info("Interaction stored in session memory")
         
         logger.info(f"Ticket resolved. Action required: {response.action_required}")
         return response
@@ -299,28 +293,11 @@ class RAGPipeline:
         return {"memory_enabled": False}
     
     def clear_session_memory(self) -> None:
-        """Clear the short-term session memory."""
+        """Clear the session memory."""
         memory = self._get_memory()
         if memory:
-            memory.clear_session()
+            memory.clear()
             logger.info("Session memory cleared")
-    
-    def add_feedback(self, memory_id: str, score: float, feedback_text: str | None = None) -> bool:
-        """
-        Add feedback to a memory entry for learning.
-        
-        Args:
-            memory_id: ID of the memory to update.
-            score: Rating (1-5).
-            feedback_text: Optional feedback.
-            
-        Returns:
-            True if updated, False otherwise.
-        """
-        memory = self._get_memory()
-        if memory:
-            return memory.long_term.add_feedback(memory_id, score, feedback_text)
-        return False
 
 
 # Singleton instance
