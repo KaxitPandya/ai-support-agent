@@ -1,7 +1,6 @@
 # 🧠 AI Support Agent - Enterprise RAG Knowledge Assistant
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Streamlit_Cloud-FF4B4B?style=for-the-badge)](https://ai-support-agent1.streamlit.app/)
-[![Tests](https://img.shields.io/badge/Tests-138_Passing-brightgreen?style=for-the-badge)](tests/)
 
 > **Production-ready RAG (Retrieval-Augmented Generation) system that transforms customer support with AI-powered, context-aware responses grounded in your documentation.**
 
@@ -16,7 +15,7 @@
 - ✅ **138 Comprehensive Unit Tests** with pytest
 - 📈 **Analytics Dashboard** with real-time metrics
 
-**Built with cutting-edge AI technologies:** OpenAI GPT-4o · RAG · MCP · FAISS Vector Database · Sentence Transformers · FastAPI · Streamlit · Docker
+**Built with cutting-edge AI technologies:** OpenAI GPT-4o · RAG · MCP · FAISS Vector Database · Sentence Transformers · Session memory · Hybrdi Search FastAPI · Streamlit · Docker
 
 [🚀 Live Demo](https://ai-support-agent1.streamlit.app/)
 
@@ -386,7 +385,7 @@ cd ai-support-agent
 cp env.example .env
 # Edit .env: OPENAI_API_KEY=sk-your-key-here
 
-# 3. Launch with Docker Compose
+# 3. Launch with Docker Compose using Docker Desktop
 docker-compose up --build
 
 # ✅ Done! Access your app:
@@ -631,23 +630,6 @@ Browse and manage conversation history:
 - Reference citations for each turn
 - Clear memory button
 
-**How Memory Works - Detailed Explanation:**
-```
-┌────────────────────────────────────────────────────────────┐
-│ 📊 MEMORY FLOW SUMMARY:                                   │
-├────────────────────────────────────────────────────────────┤
-│                                                            │
-│  Previous turns  ───▶  MCP Prompt    ───▶  LLM receives  │
-│  in SessionMemory      MEMORY section      conversation   │
-│                                            history        │
-│       ▲                                          │        │
-│       │                                          │        │
-│       │              New turn stored             │        │
-│       └──────────────  for next query  ◀─────────┘        │
-│                                                            │
-└─────────���──────────────────────────────────────────────────┘
-```
-
 #### **🧪 Test Pipeline**
 Interactive testing interface:
 - Enter custom queries
@@ -655,17 +637,6 @@ Interactive testing interface:
 - Preview MCP prompt structure
 - Real-time analysis results
 - Document content preview
-
-#### **📊 MCP Structure Visualization**
-4-section prompt pattern explained:
-
-```
-┌───��────������──────┬─���──────────────┬────────────────┬────────────────┐
-│  🎭 ROLE      │  💭 MEMORY     │  📚 CONTEXT    │  📤 OUTPUT    │
-│  Expert        │  Last 3 turns  │  Retrieved     │  JSON schema   │
-│  assistant     │  (if any)      │  documents     │  specification │
-└────────────────┴────────────────┴────────────────┴────────────────┘
-```
 
 #### **🎯 Real-World Scenario Examples**
 
@@ -770,11 +741,9 @@ pytest -vv
 | **RAG Pipeline** | ✅ 100% | Context retrieval, response generation, memory integration, error handling |
 | **Vector Store** | ✅ 100% | FAISS operations, similarity search, persistence |
 | **Embeddings** | ✅ 100% | Text embedding, batch processing, similarity |
-| **Hybrid Search** | ✅ 98% | Semantic + BM25, reranking, score fusion |
-| **Session Memory** | ✅ 95% | Conversation turns, context formatting, statistics  |
+| **Hybrid Search** | ✅ 100% | Semantic + BM25, reranking, score fusion |
 | **API Endpoints** | ✅ 100% | Request validation, error responses, security |
 | **MCP Prompts** | ✅ 100% | Prompt structure, memory injection, context injection, schemas  |
-| **Document Processing** | ✅ 92% | Upload, semantic chunking, indexing |
 
 ---
 
@@ -858,9 +827,6 @@ All settings via `.env` file. See [env.example](env.example) for all options.
 | `OPENAI_MODEL` | Model name | `gpt-4o-mini` |
 | `OPENAI_TEMPERATURE` | Response creativity (0.0-1.0) | `0.3` |
 | `OPENAI_MAX_TOKENS` | Max response length | `1024` |
-
-**Available Models:**
-
 
 #### RAG Configuration
 
