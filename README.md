@@ -4,6 +4,22 @@
 
 > **Production-ready RAG (Retrieval-Augmented Generation) system that transforms customer support with AI-powered, context-aware responses grounded in your documentation.**
 
+## 🎥 Demo Video
+
+> **Watch the AI Support Agent in action:**
+
+[![AI Support Agent Demo](https://img.shields.io/badge/▶️_Watch_Demo-Video-FF0000?style=for-the-badge&logo=youtube)](https://drive.google.com/file/d/14DtapDs1uB-46k5hDQ6epV6S8CQqKqTK/view?usp=sharing)
+
+### ✨ **Free & Easy to Use**
+
+🎉 **No setup required!** Try it instantly at **[ai-support-agent1.streamlit.app](https://ai-support-agent1.streamlit.app/)**
+
+- ✅ **No API Key Needed** - Uses shared OpenAI instance
+- ✅ **Already Hosted** - Live on Streamlit Cloud
+- ✅ **Instant Access** - Start using in seconds
+- ✅ **Full Features** - Complete RAG pipeline with Memory, Hybrid Search, and MCP
+
+---
 ---
 
 **Features:**
