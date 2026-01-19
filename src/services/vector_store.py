@@ -229,6 +229,47 @@ class FAISSVectorStore:
         self.index = faiss.IndexFlatIP(self.dimension)
         self.documents = []
         logger.info("FAISS vector database cleared")
+
+    def remove_documents_by_source(self, filename: str) -> int:
+        """
+        Remove all documents that originated from a specific file.
+
+        Since FAISS doesn't support deletion, this rebuilds the index
+        without the matching documents.
+
+        Args:
+            filename: The source filename to match (documents with IDs starting with this).
+
+        Returns:
+            Number of documents removed.
+        """
+        if not self.documents:
+            return 0
+
+        # Find documents to keep (those NOT from this file)
+        docs_to_keep = []
+        removed_count = 0
+
+        for doc in self.documents:
+            # Check if document ID starts with the filename (e.g., "file.txt-chunk-0")
+            if doc.id.startswith(f"{filename}-chunk-") or doc.id == filename:
+                removed_count += 1
+            else:
+                docs_to_keep.append(doc)
+
+        if removed_count == 0:
+            logger.info(f"No documents found for source: {filename}")
+            return 0
+
+        # Rebuild the index without removed documents
+        self.index = faiss.IndexFlatIP(self.dimension)
+        self.documents = []
+
+        if docs_to_keep:
+            self.add_documents(docs_to_keep)
+
+        logger.info(f"Removed {removed_count} documents from source: {filename}")
+        return removed_count
     
     def get_document_count(self) -> int:
         """Get the number of documents in the vector database."""
