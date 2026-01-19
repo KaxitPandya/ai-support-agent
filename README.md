@@ -10,7 +10,9 @@
 
 <div align="center">
 
-### **[🎬 ▶️ WATCH DEMO VIDEO ▶️ 🎬](https://drive.google.com/file/d/14DtapDs1uB-46k5hDQ6epV6S8CQqKqTK/view?usp=sharing)**
+[![AI Support Agent Demo](https://drive.google.com/thumbnail?id=14DtapDs1uB-46k5hDQ6epV6S8CQqKqTK&sz=w1000)](https://drive.google.com/file/d/14DtapDs1uB-46k5hDQ6epV6S8CQqKqTK/view?usp=sharing)
+
+**🎬 Click to Watch the Full Demo Video 🎬**
 
 </div>
 
